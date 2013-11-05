@@ -1,0 +1,66 @@
+group thriftPojo;
+
+parameterDeclaration() ::= <<
+<if(it.isPojo)>
+private <it.pojoType> <it.nameLowerCase>;
+<else>	
+private <it.type> <it.nameLowerCase>;
+<endif>
+>>
+
+parameterGetterSetter() ::= <<
+
+public <parameterType()> get<it.nameUpperCase>() {
+       return <it.nameLowerCase>;
+}
+public void set<it.nameUpperCase>(<parameterType()> <it.nameLowerCase>) {
+       this.<it.nameLowerCase> = <it.nameLowerCase>;
+}
+
+>>
+
+parameterType() ::= <<
+	<if(it.isPojo)><it.pojoType><else><it.type><endif>
+>>
+
+remoteResourceParamsWithSeparator() ::= <<
+	<remoteResourceParams(...)>,<\ >
+>>
+
+remoteResourceParams() ::= <<
+	<if(it.isPojo)>
+		<it.nameLowerCase>.getRemoteRepresentation()
+	<else>
+		<it.nameLowerCase>
+	<endif>
+>>
+
+remoteResource() ::= <<
+public <remoteClass> getRemoteRepresentation(){
+	return new <remoteClass>(<trunc(parameters):remoteResourceParamsWithSeparator(...)><last(parameters):remoteResourceParams(...)>);
+}
+>>
+
+constructorParameterSetter() ::= <<
+<\n>this.<it.nameLowerCase> = <if(it.isPojo)>new <it.pojoType>(remote.<it.nameLowerCase>)<else>remote.<it.nameLowerCase><endif>;
+>>
+
+pojoConstructor() ::= <<
+public <pojoClassName>(<remoteClass> remote){
+	super();
+	<parameters:constructorParameterSetter(...)>
+}
+>>
+
+builder(packageName, remoteClass, pojoClassName, parameters) ::= <<
+package <packageName>;
+
+public class <pojoClassName> {
+	<parameters:parameterDeclaration(...)>
+	<pojoConstructor(...)>
+	<remoteResource(...)>
+	
+	// Getters and Setters
+	<parameters:parameterGetterSetter(...)>
+}
+>>
