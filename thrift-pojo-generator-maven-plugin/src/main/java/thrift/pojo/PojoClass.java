@@ -12,18 +12,22 @@ public class PojoClass {
 	private static final String POJO_PACKAGE = "packageName";
 	private static final String POJO_CLASS = "pojoClassName";
 	private static final String POJO_PARAMETERS = "parameters";
+	private static final String POJO_INTEFACE = "pojoInteface";
+	private static final String POJO_INTEFACE_ACTIVE = "pojoIntefaceActive";
 	private static final String REMOTE_CLASS = "remoteClass";
 
 	private List<PojoParameter> parameters = new LinkedList<PojoParameter>();
 	private String classPackage;
 	private String className;
 	private String remoteClass;
+	private String interfaceName;
 
-	public PojoClass(String classPackage, String className, String remoteClass) {
+	public PojoClass(String classPackage, String className, String remoteClass, String interfaceName) {
 		super();
 		this.classPackage = classPackage;
 		this.className = className;
 		this.remoteClass = remoteClass;
+		this.interfaceName = interfaceName;
 	}
 
 	public void addParameter(String type, String paramName) {
@@ -38,6 +42,8 @@ public class PojoClass {
 		template.setAttribute(POJO_CLASS, className);
 		template.setAttribute(REMOTE_CLASS, remoteClass);
 		template.setAttribute(POJO_PARAMETERS, parameters);
+		template.setAttribute(POJO_INTEFACE_ACTIVE, (this.interfaceName != null && !this.interfaceName.isEmpty()));
+		template.setAttribute(POJO_INTEFACE, interfaceName);
 
 		return template.toString();
 	}
@@ -82,5 +88,11 @@ public class PojoClass {
 
 	public void setRemoteClass(String remoteClass) {
 		this.remoteClass = remoteClass;
+	}
+
+	@Override
+	public String toString() {
+		return "PojoClass [remoteClass=" + remoteClass + ", classPackage=" + classPackage + ", className=" + className + ", interfaceName=" + interfaceName
+				+ ", parameters=" + parameters + "]";
 	}
 }

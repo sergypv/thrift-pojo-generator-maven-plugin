@@ -52,4 +52,9 @@ public class PojoParameter {
 	public void setPojoType(String pojoType) {
 		this.pojoType = pojoType;
 	}
+
+	@Override
+	public String toString() {
+		return "PojoParameter [type=" + type + ", name=" + nameLowerCase + "]";
+	}
 }

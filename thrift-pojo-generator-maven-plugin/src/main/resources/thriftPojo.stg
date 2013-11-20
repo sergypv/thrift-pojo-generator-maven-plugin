@@ -8,6 +8,20 @@ private <it.type> <it.nameLowerCase>;
 <endif>
 >>
 
+parameterEnumDefinition() ::= <<
+public enum Fields{
+	<trunc(parameters):parameterEnumParamWithSeparator(...)><last(parameters):parameterEnumParam(...)>
+};
+>>
+
+parameterEnumParam() ::= <<
+<it.nameUpperCase>
+>>
+
+parameterEnumParamWithSeparator() ::= <<
+<it.nameUpperCase>, 
+>>
+
 parameterGetterSetter() ::= <<
 
 public <parameterType()> get<it.nameUpperCase>() {
@@ -41,21 +55,40 @@ public <remoteClass> getRemoteRepresentation(){
 }
 >>
 
-constructorParameterSetter() ::= <<
+constructorRemoteParameterSetter() ::= <<
 <\n>this.<it.nameLowerCase> = <if(it.isPojo)>new <it.pojoType>(remote.<it.nameLowerCase>)<else>remote.<it.nameLowerCase><endif>;
 >>
 
 pojoConstructor() ::= <<
-public <pojoClassName>(<remoteClass> remote){
+public <pojoClassName>(<remoteClass> remote) {
+	super();
+	<parameters:constructorRemoteParameterSetter(...)>
+}
+
+public <pojoClassName>(<trunc(parameters):constructorParameterDefWithSeparator(...)><last(parameters):constructorParameterDef(...)>) {
 	super();
 	<parameters:constructorParameterSetter(...)>
 }
 >>
 
-builder(packageName, remoteClass, pojoClassName, parameters) ::= <<
+constructorParameterDef() ::= <<
+<parameterType()> <it.nameLowerCase>
+>>
+
+constructorParameterDefWithSeparator() ::= <<
+<constructorParameterDef()>,
+>>
+
+constructorParameterSetter() ::= <<
+<\n>this.<it.nameLowerCase> = <it.nameLowerCase>;
+>>
+
+builder(packageName, remoteClass, pojoClassName, parameters, pojoIntefaceActive, pojoInteface) ::= <<
 package <packageName>;
 
-public class <pojoClassName> {
+public class <pojoClassName><if(pojoIntefaceActive)> implements <pojoInteface><endif> {
+	<parameterEnumDefinition(...)>
+
 	<parameters:parameterDeclaration(...)>
 	<pojoConstructor(...)>
 	<remoteResource(...)>

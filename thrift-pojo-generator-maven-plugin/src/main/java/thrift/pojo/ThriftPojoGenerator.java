@@ -49,11 +49,20 @@ public class ThriftPojoGenerator extends AbstractMojo {
 	 */
 	private String outputPostfix = null;
 
+	/**
+	 * @parameter
+	 */
+	private String interfaceName = null;
+
 	@Override
 	public void execute() {
 		try {
 			StringTemplateGroup template = getTemplate();
 			JavaDocBuilder docBuilder = getBuilder();
+
+			getLog().info(
+					String.format("Executing ThriftPojoGenerator. Sources [ %s ]; outputDirectory [ %s ]; postfix [ %s ]; inteface [ %s ]", sources,
+							outputDirectory, outputPostfix, interfaceName));
 
 			generate(template, docBuilder);
 
@@ -76,6 +85,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		}
 
 		for (Map.Entry<String, PojoClass> entry : thirftNameToPojoClassMap.entrySet()) {
+			getLog().info("Writing pojo: " + entry.getValue().toString());
 			writeClass(entry.getValue().getClassPackage().replaceAll("\\.", "/"), entry.getValue().getClassName() + ".java",
 					entry.getValue().getPojoClass(template, thirftNameToPojoClassMap));
 		}
@@ -107,7 +117,8 @@ public class ThriftPojoGenerator extends AbstractMojo {
 
 		for (JavaMethod method : javaClass.getMethods()) {
 			if (isAllArgumentsConstructor(javaClass, method)) {
-				PojoClass pojo = new PojoClass(javaClass.getPackageName(), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName());
+				PojoClass pojo = new PojoClass(javaClass.getPackageName(), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName(),
+						interfaceName);
 				for (JavaParameter p : method.getParameters()) {
 					pojo.addParameter(p.getType().toGenericString(), p.getName());
 				}
@@ -124,6 +135,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 	}
 
 	private void writeClass(String folder, String fileName, String content) throws IOException {
+		getLog().debug(String.format("Writing %s in %s", fileName, folder));
 		File pd = new File(outputDirectory, folder);
 		pd.mkdirs();
 
