@@ -54,6 +54,16 @@ public class ThriftPojoGenerator extends AbstractMojo {
 	 */
 	private String interfaceName = null;
 
+	/**
+	 * @parameter
+	 */
+	private String destinationPackage = null;
+
+	/**
+	 * @parameter
+	 */
+	private List<String> packageBaseList = null;
+
 	@Override
 	public void execute() {
 		try {
@@ -76,7 +86,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		Map<String, PojoClass> thirftNameToPojoClassMap = new HashMap<String, PojoClass>();
 
 		for (JavaClass jc : docBuilder.getClasses()) {
-			if (jc.isA("org.apache.thrift.TBase") && !jc.isInterface() && !jc.isInner()) {
+			if (jc.isA("org.apache.thrift.TBase") && !jc.isInterface() && !jc.isInner() && getSource(jc) != null) {
 				PojoClass pojo = generateBuilderFor(jc, template);
 				if (pojo != null) {
 					thirftNameToPojoClassMap.put(pojo.getRemoteClass(), pojo);
@@ -113,11 +123,11 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		return templates;
 	}
 
-	public PojoClass generateBuilderFor(JavaClass javaClass, StringTemplateGroup template) throws IOException {
+	private PojoClass generateBuilderFor(JavaClass javaClass, StringTemplateGroup template) throws IOException {
 
 		for (JavaMethod method : javaClass.getMethods()) {
 			if (isAllArgumentsConstructor(javaClass, method)) {
-				PojoClass pojo = new PojoClass(javaClass.getPackageName(), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName(),
+				PojoClass pojo = new PojoClass(getGeneratedClassPackage(javaClass), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName(),
 						interfaceName);
 				for (JavaParameter p : method.getParameters()) {
 					pojo.addParameter(p.getType().toGenericString(), p.getName());
@@ -128,6 +138,32 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		}
 
 		return null;
+	}
+
+	private String getGeneratedClassPackage(JavaClass sourceJavaClass) {
+		String classPackage = sourceJavaClass.getPackageName();
+		if (this.destinationPackage == null) {
+			return classPackage;
+		} else {
+			String sourcePackage = getSource(sourceJavaClass);
+			return destinationPackage + (sourcePackage != null ? (classPackage.substring(getSource(sourceJavaClass).length())) : classPackage);
+		}
+	}
+
+	private String getSource(JavaClass sourceJavaClass) {
+		String classSource = null;
+		String classPackage = sourceJavaClass.getPackageName();
+		if (packageBaseList != null) {
+			for (String source : packageBaseList) {
+				if (classPackage.startsWith(source) && (classSource == null || source.length() > classSource.length())) {
+					classSource = source;
+				}
+			}
+		} else {
+			classSource = classPackage;
+		}
+
+		return classSource;
 	}
 
 	private String getPojoClassName(String thirftClassName) {
