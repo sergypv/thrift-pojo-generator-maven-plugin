@@ -1,99 +1,119 @@
 group thriftPojo;
 
-parameterDeclaration() ::= <<
-<if(it.isPojo)>
-private <it.pojoType> <it.nameLowerCase>;
+parameterDeclaration(param) ::= <<
+<if(param.isPojo || param.isEnumPojo)>
+private <param.pojoType> <param.nameLowerCase>;
 <else>	
-private <it.type> <it.nameLowerCase>;
+private <param.type> <param.nameLowerCase>;
 <endif>
 >>
 
 parameterEnumDefinition() ::= <<
 public enum Fields{
-	<trunc(parameters):parameterEnumParamWithSeparator(...)><last(parameters):parameterEnumParam(...)>
+	<trunc(parameters):parameterEnumParamWithSeparator()><last(parameters):parameterEnumParam()>
 };
 >>
 
-parameterEnumParam() ::= <<
-<it.nameUpperCase>
+parameterEnumParam(param) ::= <<
+<param.nameUpperCase>
 >>
 
-parameterEnumParamWithSeparator() ::= <<
-<it.nameUpperCase>, 
+parameterEnumParamWithSeparator(param) ::= <<
+<param.nameUpperCase>, 
 >>
 
-parameterGetterSetter() ::= <<
+parameterGetterSetter(param) ::= <<
 
-public <parameterType()> get<it.nameUpperCase>() {
-       return <it.nameLowerCase>;
+public <parameterType(param)> get<param.nameUpperCase>() {
+       return <param.nameLowerCase>;
 }
-public void set<it.nameUpperCase>(<parameterType()> <it.nameLowerCase>) {
-       this.<it.nameLowerCase> = <it.nameLowerCase>;
+public void set<param.nameUpperCase>(<parameterType(param)> <param.nameLowerCase>) {
+       this.<param.nameLowerCase> = <param.nameLowerCase>;
 }
 
 >>
 
-parameterType() ::= <<
-	<if(it.isPojo)><it.pojoType><else><it.type><endif>
+parameterType(param) ::= <<
+	<if(param.isPojo || param.isEnumPojo)><param.pojoType><else><param.type><endif>
 >>
 
-remoteResourceParamsWithSeparator() ::= <<
-	<remoteResourceParams(...)>,<\ >
+remoteResourceParamsWithSeparator(param) ::= <<
+	<remoteResourceParams(param)>,<\ >
 >>
 
-remoteResourceParams() ::= <<
-	<if(it.isPojo)>
-		<it.nameLowerCase>.getRemoteRepresentation()
-	<else>
-		<it.nameLowerCase>
-	<endif>
+remoteResourceParams(param) ::= <<
+	<if(param.isPojo || param.isEnumPojo)><param.nameLowerCase>.getRemoteRepresentation()<else><param.nameLowerCase><endif>
 >>
 
 remoteResource() ::= <<
 public <remoteClass> getRemoteRepresentation(){
-	return new <remoteClass>(<trunc(parameters):remoteResourceParamsWithSeparator(...)><last(parameters):remoteResourceParams(...)>);
+	return new <remoteClass>(<trunc(parameters):remoteResourceParamsWithSeparator()><last(parameters):remoteResourceParams()>);
 }
 >>
 
-constructorRemoteParameterSetter() ::= <<
-<\n>this.<it.nameLowerCase> = <if(it.isPojo)>new <it.pojoType>(remote.<it.nameLowerCase>)<else>remote.<it.nameLowerCase><endif>;
+constructorRemoteParameterSetter(param) ::= <<
+<\n>this.<param.nameLowerCase> = <if(param.isPojo)>new <param.pojoType>(remote.<param.nameLowerCase>)<elseif(param.isEnumPojo)><param.pojoType>.getPojoRepresentation(remote.<param.nameLowerCase>)<else>remote.<param.nameLowerCase><endif>;
 >>
 
 pojoConstructor() ::= <<
 public <pojoClassName>(<remoteClass> remote) {
 	super();
-	<parameters:constructorRemoteParameterSetter(...)>
+	<parameters:constructorRemoteParameterSetter()>
 }
 
-public <pojoClassName>(<trunc(parameters):constructorParameterDefWithSeparator(...)><last(parameters):constructorParameterDef(...)>) {
+public <pojoClassName>(<trunc(parameters):constructorParameterDefWithSeparator()><last(parameters):constructorParameterDef()>) {
 	super();
-	<parameters:constructorParameterSetter(...)>
+	<parameters:constructorParameterSetter()>
 }
 >>
 
-constructorParameterDef() ::= <<
-<parameterType()> <it.nameLowerCase>
+constructorParameterDef(param) ::= <<
+<parameterType(param)> <param.nameLowerCase>
 >>
 
-constructorParameterDefWithSeparator() ::= <<
-<constructorParameterDef()>,
+constructorParameterDefWithSeparator(param) ::= <<
+<constructorParameterDef(param)>,
 >>
 
-constructorParameterSetter() ::= <<
-<\n>this.<it.nameLowerCase> = <it.nameLowerCase>;
+constructorParameterSetter(param) ::= <<
+<\n>this.<param.nameLowerCase> = <param.nameLowerCase>;
 >>
 
 builder(packageName, remoteClass, pojoClassName, parameters, pojoIntefaceActive, pojoInteface) ::= <<
 package <packageName>;
 
 public class <pojoClassName><if(pojoIntefaceActive)> implements <pojoInteface><endif> {
-	<parameterEnumDefinition(...)>
+	<parameterEnumDefinition()>
 
-	<parameters:parameterDeclaration(...)>
-	<pojoConstructor(...)>
-	<remoteResource(...)>
+	<parameters:parameterDeclaration()>
+	<pojoConstructor()>
+	<remoteResource()>
 	
 	// Getters and Setters
-	<parameters:parameterGetterSetter(...)>
+	<parameters:parameterGetterSetter()>
 }
+>>
+
+enumBuilder(packageName, enumName, pojoEnumName, types) ::= <<
+package <packageName>;
+
+public enum <pojoEnumName> {
+	<trunc(types):enumTypeWithSeparator()><last(types):enumType()>;
+
+	public static <pojoEnumName> getPojoRepresentation(<enumName> type) {
+		return <pojoEnumName>.valueOf(type.name());
+	}
+
+	public <enumName> getRemoteRepresentation() {
+		return <enumName>.valueOf(this.name());
+	}
+}
+>>
+
+enumTypeWithSeparator(param) ::= <<
+	<enumType(param)>,<\ >
+>>
+
+enumType(param) ::= <<
+	<param>
 >>

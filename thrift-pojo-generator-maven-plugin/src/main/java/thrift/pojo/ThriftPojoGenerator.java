@@ -4,17 +4,18 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.stringtemplate.StringTemplateGroup;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.project.MavenProject;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 
@@ -67,7 +68,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 	@Override
 	public void execute() {
 		try {
-			StringTemplateGroup template = getTemplate();
+			STGroup template = new STGroupFile("thriftPojo.stg");
 			JavaDocBuilder docBuilder = getBuilder();
 
 			getLog().info(
@@ -82,19 +83,24 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		}
 	}
 
-	private void generate(StringTemplateGroup template, JavaDocBuilder docBuilder) throws Exception {
-		Map<String, PojoClass> thirftNameToPojoClassMap = new HashMap<String, PojoClass>();
+	private void generate(STGroup template, JavaDocBuilder docBuilder) throws Exception {
+		Map<String, PojoInterface> thirftNameToPojoClassMap = new HashMap<String, PojoInterface>();
 
 		for (JavaClass jc : docBuilder.getClasses()) {
-			if (jc.isA("org.apache.thrift.TBase") && !jc.isInterface() && !jc.isInner() && getSource(jc) != null) {
-				PojoClass pojo = generateBuilderFor(jc, template);
+			if (!jc.isInterface() && !jc.isInner() && getSource(jc) != null) {
+				PojoInterface pojo = null;
+				if (jc.isA("org.apache.thrift.TBase")) {
+					pojo = generateClassBuilderFor(jc, template);
+				} else if (jc.isA("org.apache.thrift.TEnum")) {
+					pojo = generateEnumBuilderFor(jc, template);
+				}
 				if (pojo != null) {
-					thirftNameToPojoClassMap.put(pojo.getRemoteClass(), pojo);
+					thirftNameToPojoClassMap.put(pojo.getRemoteName(), pojo);
 				}
 			}
 		}
 
-		for (Map.Entry<String, PojoClass> entry : thirftNameToPojoClassMap.entrySet()) {
+		for (Map.Entry<String, PojoInterface> entry : thirftNameToPojoClassMap.entrySet()) {
 			getLog().info("Writing pojo: " + entry.getValue().toString());
 			writeClass(entry.getValue().getClassPackage().replaceAll("\\.", "/"), entry.getValue().getClassName() + ".java",
 					entry.getValue().getPojoClass(template, thirftNameToPojoClassMap));
@@ -111,20 +117,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		return docBuilder;
 	}
 
-	private StringTemplateGroup getTemplate() throws IOException {
-		StringTemplateGroup templates;
-		InputStream is = ThriftPojoGenerator.class.getClassLoader().getResourceAsStream("thriftPojo.stg");
-		try {
-			templates = new StringTemplateGroup(new InputStreamReader(is));
-		} finally {
-			is.close();
-		}
-
-		return templates;
-	}
-
-	private PojoClass generateBuilderFor(JavaClass javaClass, StringTemplateGroup template) throws IOException {
-
+	private PojoClass generateClassBuilderFor(JavaClass javaClass, STGroup template) throws IOException {
 		for (JavaMethod method : javaClass.getMethods()) {
 			if (isAllArgumentsConstructor(javaClass, method)) {
 				PojoClass pojo = new PojoClass(getGeneratedClassPackage(javaClass), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName(),
@@ -138,6 +131,16 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		}
 
 		return null;
+	}
+
+	private PojoEnum generateEnumBuilderFor(JavaClass javaClass, STGroup template) throws IOException {
+		PojoEnum enumPojo = new PojoEnum(getGeneratedClassPackage(javaClass), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName());
+
+		for (JavaField field : javaClass.getFields()) {
+			enumPojo.addType(field.getName());
+		}
+
+		return enumPojo;
 	}
 
 	private String getGeneratedClassPackage(JavaClass sourceJavaClass) {

@@ -4,6 +4,7 @@ public class PojoParameter {
 	public String type;
 	public String pojoType = null;
 	public boolean isPojo = false;
+	public boolean isEnumPojo = false;
 	public String nameLowerCase;
 	public String nameUpperCase;
 
@@ -56,5 +57,13 @@ public class PojoParameter {
 	@Override
 	public String toString() {
 		return "PojoParameter [type=" + type + ", name=" + nameLowerCase + "]";
+	}
+
+	public boolean isEnumPojo() {
+		return isEnumPojo;
+	}
+
+	public void setEnumPojo(boolean isEnumPojo) {
+		this.isEnumPojo = isEnumPojo;
 	}
 }

@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
 
-public class PojoClass {
+public class PojoClass implements PojoInterface {
 	private static final String POJO_BUILDER = "builder";
 	private static final String POJO_PACKAGE = "packageName";
 	private static final String POJO_CLASS = "pojoClassName";
@@ -19,14 +19,14 @@ public class PojoClass {
 	private List<PojoParameter> parameters = new LinkedList<PojoParameter>();
 	private String classPackage;
 	private String className;
-	private String remoteClass;
+	private String remoteName;
 	private String interfaceName;
 
 	public PojoClass(String classPackage, String className, String remoteClass, String interfaceName) {
 		super();
 		this.classPackage = classPackage;
 		this.className = className;
-		this.remoteClass = remoteClass;
+		this.remoteName = remoteClass;
 		this.interfaceName = interfaceName;
 	}
 
@@ -34,26 +34,31 @@ public class PojoClass {
 		parameters.add(new PojoParameter(type, paramName));
 	}
 
-	public String getPojoClass(StringTemplateGroup templateGroup, Map<String, PojoClass> thirftNameToPojoClassMap) {
-		StringTemplate template = templateGroup.getInstanceOf(POJO_BUILDER);
+	@Override
+	public String getPojoClass(STGroup templateGroup, Map<String, PojoInterface> thirftNameToPojoClassMap) {
+		ST template = templateGroup.getInstanceOf(POJO_BUILDER);
 		remmapParameters(thirftNameToPojoClassMap);
 
-		template.setAttribute(POJO_PACKAGE, classPackage);
-		template.setAttribute(POJO_CLASS, className);
-		template.setAttribute(REMOTE_CLASS, remoteClass);
-		template.setAttribute(POJO_PARAMETERS, parameters);
-		template.setAttribute(POJO_INTEFACE_ACTIVE, (this.interfaceName != null && !this.interfaceName.isEmpty()));
-		template.setAttribute(POJO_INTEFACE, interfaceName);
+		template.add(POJO_PACKAGE, classPackage);
+		template.add(POJO_CLASS, className);
+		template.add(REMOTE_CLASS, remoteName);
+		template.add(POJO_PARAMETERS, parameters);
+		template.add(POJO_INTEFACE_ACTIVE, (this.interfaceName != null && !this.interfaceName.isEmpty()));
+		template.add(POJO_INTEFACE, interfaceName);
 
-		return template.toString();
+		return template.render();
 	}
 
-	private void remmapParameters(Map<String, PojoClass> thirftNameToPojoClassMap) {
+	private void remmapParameters(Map<String, PojoInterface> thirftNameToPojoClassMap) {
 		for (PojoParameter parameter : parameters) {
-			PojoClass pojo = thirftNameToPojoClassMap.get(parameter.getType());
+			PojoInterface pojo = thirftNameToPojoClassMap.get(parameter.getType());
 			if (pojo != null) {
 				parameter.setPojoType(pojo.getClassPackage() + "." + pojo.getClassName());
-				parameter.setPojo(true);
+				if (pojo instanceof PojoEnum) {
+					parameter.setEnumPojo(true);
+				} else {
+					parameter.setPojo(true);
+				}
 			}
 		}
 	}
@@ -66,6 +71,7 @@ public class PojoClass {
 		this.parameters = parameters;
 	}
 
+	@Override
 	public String getClassPackage() {
 		return classPackage;
 	}
@@ -74,6 +80,7 @@ public class PojoClass {
 		this.classPackage = classPackage;
 	}
 
+	@Override
 	public String getClassName() {
 		return className;
 	}
@@ -82,17 +89,17 @@ public class PojoClass {
 		this.className = className;
 	}
 
-	public String getRemoteClass() {
-		return remoteClass;
+	public String getRemoteName() {
+		return remoteName;
 	}
 
-	public void setRemoteClass(String remoteClass) {
-		this.remoteClass = remoteClass;
+	public void setRemoteName(String remoteClass) {
+		this.remoteName = remoteClass;
 	}
 
 	@Override
 	public String toString() {
-		return "PojoClass [remoteClass=" + remoteClass + ", classPackage=" + classPackage + ", className=" + className + ", interfaceName=" + interfaceName
+		return "PojoClass [remoteClass=" + remoteName + ", classPackage=" + classPackage + ", className=" + className + ", interfaceName=" + interfaceName
 				+ ", parameters=" + parameters + "]";
 	}
 }
