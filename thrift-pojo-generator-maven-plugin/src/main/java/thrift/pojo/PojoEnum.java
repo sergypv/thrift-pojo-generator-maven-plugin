@@ -9,6 +9,7 @@ import org.stringtemplate.v4.STGroup;
 
 public class PojoEnum implements PojoInterface {
 	private static final String POJO_BUILDER = "enumBuilder";
+	private static final String BRIDGE_BUILDER = "enumBridgeBuilder";
 	private static final String POJO_PACKAGE = "packageName";
 	private static final String POJO_REMOTE_ENUM = "pojoEnumName";
 	private static final String POJO_ENUM = "enumName";
@@ -34,12 +35,25 @@ public class PojoEnum implements PojoInterface {
 	public String getPojoClass(STGroup templateGroup, Map<String, PojoInterface> thirftNameToPojoClassMap) {
 		ST template = templateGroup.getInstanceOf(POJO_BUILDER);
 
+		populateTemplateParams(template);
+
+		return template.render();
+	}
+
+	@Override
+	public String getBridgeClass(STGroup templateGroup, Map<String, PojoInterface> thirftNameToPojoClassMap) {
+		ST template = templateGroup.getInstanceOf(BRIDGE_BUILDER);
+
+		populateTemplateParams(template);
+
+		return template.render();
+	}
+	
+	private void populateTemplateParams(ST template) {
 		template.add(POJO_PACKAGE, enumPackage);
 		template.add(POJO_ENUM, remoteName);
 		template.add(POJO_REMOTE_ENUM, enumName);
-		template.add(POJO_TYPES, types);
-
-		return template.render();
+		template.add(POJO_TYPES, types);	
 	}
 
 	@Override

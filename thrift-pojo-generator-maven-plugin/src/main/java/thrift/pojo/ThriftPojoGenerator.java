@@ -3,7 +3,6 @@ package thrift.pojo;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,8 +103,9 @@ public class ThriftPojoGenerator extends AbstractMojo {
 			getLog().info("Writing pojo: " + entry.getValue().toString());
 			writeClass(entry.getValue().getClassPackage().replaceAll("\\.", "/"), entry.getValue().getClassName() + ".java",
 					entry.getValue().getPojoClass(template, thirftNameToPojoClassMap));
+			writeClass(entry.getValue().getClassPackage().replaceAll("\\.", "/"), entry.getValue().getClassName() + "Bridge.java", entry.getValue()
+					.getBridgeClass(template, thirftNameToPojoClassMap));
 		}
-
 	}
 
 	private JavaDocBuilder getBuilder() {
@@ -137,7 +137,9 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		PojoEnum enumPojo = new PojoEnum(getGeneratedClassPackage(javaClass), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName());
 
 		for (JavaField field : javaClass.getFields()) {
-			enumPojo.addType(field.getName());
+			if (!field.getName().equals("value")) {
+				enumPojo.addType(field.getName());
+			}
 		}
 
 		return enumPojo;
@@ -185,7 +187,6 @@ public class ThriftPojoGenerator extends AbstractMojo {
 			out.flush();
 			out.close();
 		}
-
 	}
 
 	private boolean isAllArgumentsConstructor(JavaClass javaClass, JavaMethod method) {

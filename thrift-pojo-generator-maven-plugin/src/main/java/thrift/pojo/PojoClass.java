@@ -9,6 +9,7 @@ import org.stringtemplate.v4.STGroup;
 
 public class PojoClass implements PojoInterface {
 	private static final String POJO_BUILDER = "builder";
+	private static final String BRIDGE_BUILDER = "bridgeBuilder";
 	private static final String POJO_PACKAGE = "packageName";
 	private static final String POJO_CLASS = "pojoClassName";
 	private static final String POJO_PARAMETERS = "parameters";
@@ -37,16 +38,30 @@ public class PojoClass implements PojoInterface {
 	@Override
 	public String getPojoClass(STGroup templateGroup, Map<String, PojoInterface> thirftNameToPojoClassMap) {
 		ST template = templateGroup.getInstanceOf(POJO_BUILDER);
-		remmapParameters(thirftNameToPojoClassMap);
 
-		template.add(POJO_PACKAGE, classPackage);
-		template.add(POJO_CLASS, className);
-		template.add(REMOTE_CLASS, remoteName);
-		template.add(POJO_PARAMETERS, parameters);
+		remmapParameters(thirftNameToPojoClassMap);
+		populateTemplateParams(template);
 		template.add(POJO_INTEFACE_ACTIVE, (this.interfaceName != null && !this.interfaceName.isEmpty()));
 		template.add(POJO_INTEFACE, interfaceName);
 
 		return template.render();
+	}
+
+	@Override
+	public String getBridgeClass(STGroup templateGroup, Map<String, PojoInterface> thirftNameToPojoClassMap) {
+		ST template = templateGroup.getInstanceOf(BRIDGE_BUILDER);
+
+		remmapParameters(thirftNameToPojoClassMap);
+		populateTemplateParams(template);
+
+		return template.render();
+	}
+
+	private void populateTemplateParams(ST template) {
+		template.add(POJO_PACKAGE, classPackage);
+		template.add(POJO_CLASS, className);
+		template.add(REMOTE_CLASS, remoteName);
+		template.add(POJO_PARAMETERS, parameters);
 	}
 
 	private void remmapParameters(Map<String, PojoInterface> thirftNameToPojoClassMap) {
