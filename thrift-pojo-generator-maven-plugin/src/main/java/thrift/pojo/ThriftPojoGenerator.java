@@ -121,7 +121,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		for (JavaMethod method : javaClass.getMethods()) {
 			if (isAllArgumentsConstructor(javaClass, method)) {
 				PojoClass pojo = new PojoClass(getGeneratedClassPackage(javaClass), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName(),
-						interfaceName);
+						interfaceName, getPojoSuperclass(javaClass));
 				for (JavaParameter p : method.getParameters()) {
 					pojo.addParameter(p.getType().toGenericString(), p.getName());
 				}
@@ -131,6 +131,14 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		}
 
 		return null;
+	}
+
+	private String getPojoSuperclass(JavaClass javaClass) {
+		if (javaClass.getSuperClass().getFullyQualifiedName().equals("org.apache.thrift.TException")) {
+			return "java.lang.Exception";
+		} else {
+			return null;
+		}
 	}
 
 	private PojoEnum generateEnumBuilderFor(JavaClass javaClass, STGroup template) throws IOException {

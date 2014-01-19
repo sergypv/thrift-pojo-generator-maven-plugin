@@ -16,19 +16,23 @@ public class PojoClass implements PojoInterface {
 	private static final String POJO_INTEFACE = "pojoInteface";
 	private static final String POJO_INTEFACE_ACTIVE = "pojoIntefaceActive";
 	private static final String REMOTE_CLASS = "remoteClass";
+	private static final String POJO_SUPERCLASS_ACTIVE = "pojoSuperclassActive";
+	private static final String POJO_SUPERCLASS = "pojoSuperclass";
 
 	private List<PojoParameter> parameters = new LinkedList<PojoParameter>();
 	private String classPackage;
 	private String className;
 	private String remoteName;
 	private String interfaceName;
+	private String pojoSuperclas;
 
-	public PojoClass(String classPackage, String className, String remoteClass, String interfaceName) {
+	public PojoClass(String classPackage, String className, String remoteClass, String interfaceName, String pojoSuperclas) {
 		super();
 		this.classPackage = classPackage;
 		this.className = className;
 		this.remoteName = remoteClass;
 		this.interfaceName = interfaceName;
+		this.pojoSuperclas = pojoSuperclas;
 	}
 
 	public void addParameter(String type, String paramName) {
@@ -43,6 +47,8 @@ public class PojoClass implements PojoInterface {
 		populateTemplateParams(template);
 		template.add(POJO_INTEFACE_ACTIVE, (this.interfaceName != null && !this.interfaceName.isEmpty()));
 		template.add(POJO_INTEFACE, interfaceName);
+		template.add(POJO_SUPERCLASS_ACTIVE, (pojoSuperclas != null && !pojoSuperclas.isEmpty()));
+		template.add(POJO_SUPERCLASS, pojoSuperclas);
 
 		return template.render();
 	}
