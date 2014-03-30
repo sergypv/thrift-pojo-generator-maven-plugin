@@ -89,7 +89,7 @@ public class <pojoClassName><if(pojoSuperclassActive)> extends <pojoSuperclass><
 enumBuilder(packageName, enumName, pojoEnumName, types) ::= <<
 package <packageName>;
 
-public enum <pojoEnumName> {
+public enum <pojoEnumName> implements java.io.Serializable {
 	<trunc(types):enumTypeWithSeparator()><last(types):enumType()>;
 }
 >>
