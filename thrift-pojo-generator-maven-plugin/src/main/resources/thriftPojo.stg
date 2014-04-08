@@ -3,6 +3,8 @@ group thriftPojo;
 parameterDeclaration(param) ::= <<
 <if(param.isPojo || param.isEnumPojo)>
 private <param.pojoType> <param.nameLowerCase>;
+<elseif(param.isGenericCollection)>
+private java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> <param.nameLowerCase>;
 <else>	
 private <param.type> <param.nameLowerCase>;
 <endif>
@@ -33,7 +35,7 @@ public void set<param.nameUpperCase>(<parameterType(param)> <param.nameLowerCase
 >>
 
 parameterType(param) ::= <<
-	<if(param.isPojo || param.isEnumPojo)><param.pojoType><else><param.type><endif>
+	<if(param.isPojo || param.isEnumPojo)><param.pojoType><elseif(param.isGenericCollection)>java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\><else><param.type><endif>
 >>
 
 remoteResourceParamsWithSeparator(param) ::= <<
@@ -41,7 +43,7 @@ remoteResourceParamsWithSeparator(param) ::= <<
 >>
 
 remoteResourceParams(param) ::= <<
-	<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getRemoteRepresentation(pojo.get<param.nameUpperCase>())<else>pojo.get<param.nameUpperCase>()<endif>
+	<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getRemoteRepresentation(pojo.get<param.nameUpperCase>())<elseif(param.isGenericCollection)>getRemoteMapRepresentation<param.nameUpperCase>(pojo.get<param.nameUpperCase>())<else>pojo.get<param.nameUpperCase>()<endif>
 >>
 
 constructorRemoteParameterSetter(param) ::= <<
@@ -114,11 +116,38 @@ public class <bridgeName(pojoClassName)> {
 	public static <remoteClass> getRemoteRepresentation(<pojoClassName> pojo){
 		return new <remoteClass>(<trunc(parameters):remoteResourceParamsWithSeparator()><last(parameters):remoteResourceParams()>);
 	}
+	
+<parameters:bridgeRemoteParamMapFunction()>
 }
 >>
 
 bridgeRemoteParam(param) ::= <<
-<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getPojoRepresentation(remote.<param.nameLowerCase>)<else>remote.<param.nameLowerCase><endif>
+<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getPojoRepresentation(remote.<param.nameLowerCase>)<elseif(param.isGenericCollection)>getPojoMapRepresentation<param.nameUpperCase>(remote.<param.nameLowerCase>)<else>remote.<param.nameLowerCase><endif>
+>>
+
+bridgeRemoteParamMapFunction(param) ::= <<
+<if(param.isGenericCollection)>
+	private static java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> getPojoMapRepresentation<param.nameUpperCase>(java.util.Map\<<param.pojoKey.type>, <param.pojoValue.type>\> map) {
+		java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> newMap = new java.util.HashMap\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\>(map.size());
+		for (java.util.Map.Entry\<<param.pojoKey.type>, <param.pojoValue.type>\> entry : map.entrySet()) {
+			newMap.put(<if(param.pojoKey.isPojo)><bridgeName(param.pojoKey.pojoType)>.getPojoRepresentation(entry.getKey())<else>entry.getKey()<endif>,
+					   <if(param.pojoValue.isPojo)><bridgeName(param.pojoValue.pojoType)>.getPojoRepresentation(entry.getValue())<else>entry.getValue()<endif>);
+		}
+		
+		return newMap;
+	}
+
+	private static java.util.Map\<<param.pojoKey.type>, <param.pojoValue.type>\> getRemoteMapRepresentation<param.nameUpperCase>(java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> map) {
+		java.util.Map\<<param.pojoKey.type>, <param.pojoValue.type>\> newMap = new java.util.HashMap\<<param.pojoKey.type>, <param.pojoValue.type>\>(map.size());
+		for (java.util.Map.Entry\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> entry : map.entrySet()) {
+			newMap.put(<if(param.pojoKey.isPojo)><bridgeName(param.pojoKey.pojoType)>.getRemoteRepresentation(entry.getKey())<else>entry.getKey()<endif>,
+					   <if(param.pojoValue.isPojo)><bridgeName(param.pojoValue.pojoType)>.getRemoteRepresentation(entry.getValue())<else>entry.getValue()<endif>);
+		}
+		
+		return newMap;
+	}
+	
+<endif>
 >>
 
 bridgeRemoteParamWithSeparator(param) ::= <<

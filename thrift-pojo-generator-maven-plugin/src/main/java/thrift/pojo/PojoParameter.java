@@ -1,10 +1,13 @@
 package thrift.pojo;
 
+import java.util.Map;
+
 public class PojoParameter {
 	public String type;
 	public String pojoType = null;
 	public boolean isPojo = false;
 	public boolean isEnumPojo = false;
+	public boolean isGenericCollection = false;
 	public String nameLowerCase;
 	public String nameUpperCase;
 
@@ -12,6 +15,18 @@ public class PojoParameter {
 		this.type = type;
 		this.nameLowerCase = paramName.substring(0, 1).toLowerCase() + paramName.substring(1);
 		this.nameUpperCase = paramName.substring(0, 1).toUpperCase() + paramName.substring(1);
+	}
+
+	public void remmapParameters(Map<String, PojoInterface> thirftNameToPojoClassMap) {
+		PojoInterface pojo = thirftNameToPojoClassMap.get(getType());
+		if (pojo != null) {
+			setPojoType(pojo.getClassPackage() + "." + pojo.getClassName());
+			if (pojo instanceof PojoEnum) {
+				setEnumPojo(true);
+			} else {
+				setPojo(true);
+			}
+		}
 	}
 
 	public String getType() {
@@ -65,5 +80,13 @@ public class PojoParameter {
 
 	public void setEnumPojo(boolean isEnumPojo) {
 		this.isEnumPojo = isEnumPojo;
+	}
+
+	protected boolean isGenericCollection() {
+		return isGenericCollection;
+	}
+
+	protected void setGenericCollection(boolean isGenericCollection) {
+		this.isGenericCollection = isGenericCollection;
 	}
 }

@@ -39,6 +39,10 @@ public class PojoClass implements PojoInterface {
 		parameters.add(new PojoParameter(type, paramName));
 	}
 
+	public void addMapParameter(String type, String paramName) {
+		parameters.add(new PojoParameterMap(type, paramName));
+	}
+
 	@Override
 	public String getPojoClass(STGroup templateGroup, Map<String, PojoInterface> thirftNameToPojoClassMap) {
 		ST template = templateGroup.getInstanceOf(POJO_BUILDER);
@@ -72,15 +76,7 @@ public class PojoClass implements PojoInterface {
 
 	private void remmapParameters(Map<String, PojoInterface> thirftNameToPojoClassMap) {
 		for (PojoParameter parameter : parameters) {
-			PojoInterface pojo = thirftNameToPojoClassMap.get(parameter.getType());
-			if (pojo != null) {
-				parameter.setPojoType(pojo.getClassPackage() + "." + pojo.getClassName());
-				if (pojo instanceof PojoEnum) {
-					parameter.setEnumPojo(true);
-				} else {
-					parameter.setPojo(true);
-				}
-			}
+			parameter.remmapParameters(thirftNameToPojoClassMap);
 		}
 	}
 

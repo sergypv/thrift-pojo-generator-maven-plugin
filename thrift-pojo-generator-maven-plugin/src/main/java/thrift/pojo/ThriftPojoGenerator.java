@@ -17,6 +17,7 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
+import com.thoughtworks.qdox.model.Type;
 
 /**
  * @goal generate-sources
@@ -123,7 +124,11 @@ public class ThriftPojoGenerator extends AbstractMojo {
 				PojoClass pojo = new PojoClass(getGeneratedClassPackage(javaClass), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName(),
 						interfaceName, getPojoSuperclass(javaClass));
 				for (JavaParameter p : method.getParameters()) {
-					pojo.addParameter(p.getType().toGenericString(), p.getName());
+					if (p.getType().isA(new Type("java.util.Map"))) {
+						pojo.addMapParameter(p.getType().toGenericString(), p.getName());
+					} else {
+						pojo.addParameter(p.getType().toGenericString(), p.getName());
+					}
 				}
 
 				return pojo;
