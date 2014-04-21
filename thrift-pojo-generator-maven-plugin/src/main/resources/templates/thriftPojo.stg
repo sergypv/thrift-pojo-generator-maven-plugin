@@ -104,23 +104,6 @@ enumType(param) ::= <<
 	<param>
 >>
 
-bridgeBuilder(packageName, remoteClass, pojoClassName, parameters) ::= <<
-package <packageName>;
-
-public class <bridgeName(pojoClassName)> {
-
-	public static <pojoClassName> getPojoRepresentation(<remoteClass> remote) {
-		return new <pojoClassName>(<trunc(parameters):bridgeRemoteParamWithSeparator()><last(parameters):bridgeRemoteParam()>);
-	}
-	
-	public static <remoteClass> getRemoteRepresentation(<pojoClassName> pojo){
-		return new <remoteClass>(<trunc(parameters):remoteResourceParamsWithSeparator()><last(parameters):remoteResourceParams()>);
-	}
-	
-<parameters:bridgeRemoteParamMapFunction()>
-}
->>
-
 bridgeRemoteParam(param) ::= <<
 <if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getPojoRepresentation(remote.<param.nameLowerCase>)<elseif(param.isGenericCollection)>getPojoMapRepresentation<param.nameUpperCase>(remote.<param.nameLowerCase>)<else>remote.<param.nameLowerCase><endif>
 >>
@@ -169,5 +152,58 @@ public class <bridgeName(pojoEnumName)> {
 	public static <enumName> getRemoteRepresentation(<pojoEnumName> pojoEnum) {
 		return <enumName>.valueOf(pojoEnum.name());
 	}
+}
+>>
+
+bridgeBuilder(packageName, remoteClass, pojoClassName, parameters) ::= <<
+package <packageName>;
+
+public class <bridgeName(pojoClassName)> {
+
+	public static <pojoClassName> getPojoRepresentation(<remoteClass> remote) {
+		return new <pojoClassName>(<trunc(parameters):bridgeRemoteParamWithSeparator()><last(parameters):bridgeRemoteParam()>);
+	}
+	
+	public static <remoteClass> getRemoteRepresentation(<pojoClassName> pojo){
+		return new <remoteClass>(<trunc(parameters):remoteResourceParamsWithSeparator()><last(parameters):remoteResourceParams()>);
+	}
+	
+	public static java.util.Set\<<remoteClass>\> getRemoteRepresentationCollection(java.util.Set\<<pojoClassName>\> pojoSet) {
+		java.util.Set\<<remoteClass>\> remoteRepresentationCollection = new java.util.HashSet\<<remoteClass>\>();
+		for (<pojoClassName> pojo : pojoSet) {
+			remoteRepresentationCollection.add(<bridgeName(pojoClassName)>.getRemoteRepresentation(pojo));
+		}
+
+		return remoteRepresentationCollection;
+	}
+	
+	public static java.util.Set\<<pojoClassName>\> getPojoRepresentationCollection(java.util.Set\<<remoteClass>\> pojoSet) {
+		java.util.Set\<<pojoClassName>\> pojoRepresentationCollection = new java.util.HashSet\<<pojoClassName>\>();
+		for (<remoteClass> remote : pojoSet) {
+			pojoRepresentationCollection.add(<bridgeName(pojoClassName)>.getPojoRepresentation(remote));
+		}
+
+		return pojoRepresentationCollection;
+	}
+
+	public static java.util.List\<<remoteClass>\> getRemoteRepresentationCollection(java.util.List\<<pojoClassName>\> pojoSet) {
+		java.util.List\<<remoteClass>\> remoteRepresentationCollection = new java.util.ArrayList\<<remoteClass>\>();
+		for (<pojoClassName> pojo : pojoSet) {
+			remoteRepresentationCollection.add(<bridgeName(pojoClassName)>.getRemoteRepresentation(pojo));
+		}
+
+		return remoteRepresentationCollection;
+	}
+	
+	public static java.util.List\<<pojoClassName>\> getPojoRepresentationCollection(java.util.List\<<remoteClass>\> pojoSet) {
+		java.util.List\<<pojoClassName>\> pojoRepresentationCollection = new java.util.ArrayList\<<pojoClassName>\>();
+		for (<remoteClass> remote : pojoSet) {
+			pojoRepresentationCollection.add(<bridgeName(pojoClassName)>.getPojoRepresentation(remote));
+		}
+
+		return pojoRepresentationCollection;
+	}
+	
+<parameters:bridgeRemoteParamMapFunction()>
 }
 >>

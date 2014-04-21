@@ -68,7 +68,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 	@Override
 	public void execute() {
 		try {
-			STGroup template = new STGroupFile("thriftPojo.stg");
+			STGroup template = new STGroupFile("templates/thriftPojo.stg");
 			JavaDocBuilder docBuilder = getBuilder();
 
 			getLog().info(
