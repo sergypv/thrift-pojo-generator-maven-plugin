@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -24,8 +26,16 @@ import com.thoughtworks.qdox.model.Type;
  * @phase generate-sources
  */
 public class ThriftPojoGenerator extends AbstractMojo {
+    private static final String TEMPLATES_THRIFT_POJO = "templates/thriftPojo.stg";
+    private static final String THRIFT_CLASS_BASE = "org.apache.thrift.TBase";
+    private static final String THRIFT_CLASS_ENUM = "org.apache.thrift.TEnum";
+    private static final String THRIFT_CLASS_EXCEPTION = "org.apache.thrift.TException";
+    private static final String POJO_CLASS_EXCEPTION = "java.lang.Exception";
+    private static final String POJO_CLASS_MAP = "java.util.Map";
+    private static final String JAVA_EXTENSION = ".java";
+    private static final String POJO_POSTFIX_BRIDGE = "Bridge";
 
-	/**
+    /**
 	 * @parameter expression="${project}"
 	 * @required
 	 * @readonly
@@ -34,41 +44,53 @@ public class ThriftPojoGenerator extends AbstractMojo {
 	private MavenProject project;
 
 	/**
+     * List of source packages. The content will be parsed recursively
+     *
 	 * @parameter
 	 * @required
 	 */
 	private List<String> sources;
 
 	/**
+     * Output directory for the generated Pojos
+     *
 	 * @parameter default-value="target/generated-sources"
 	 * @required
 	 */
 	private File outputDirectory;
 
 	/**
+     * Generated files need a postfix in order to differenciate from the original ones. Default is "Pojo"
+     *
 	 * @parameter default-value="Pojo"
 	 */
 	private String outputPostfix = null;
 
 	/**
+     * All the generated classes will extend this interface (i.e. java.io.Serializable)
+     *
 	 * @parameter
 	 */
 	private String interfaceName = null;
 
 	/**
+     * Package where the generated files will be persisted
+     *
 	 * @parameter
 	 */
 	private String destinationPackage = null;
 
 	/**
+     * If defined, only classes on those packages will generate pojos
+     *
 	 * @parameter
 	 */
 	private List<String> packageBaseList = null;
 
 	@Override
-	public void execute() {
+	public void execute() throws MojoExecutionException{
 		try {
-			STGroup template = new STGroupFile("templates/thriftPojo.stg");
+			STGroup template = new STGroupFile(TEMPLATES_THRIFT_POJO);
 			JavaDocBuilder docBuilder = getBuilder();
 
 			getLog().info(
@@ -80,6 +102,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 			project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
 		} catch (Exception e) {
 			getLog().error("General error", e);
+            throw new MojoExecutionException("Error generatings Pojos", e);
 		}
 	}
 
@@ -89,9 +112,9 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		for (JavaClass jc : docBuilder.getClasses()) {
 			if (!jc.isInterface() && !jc.isInner() && getSource(jc) != null) {
 				PojoInterface pojo = null;
-				if (jc.isA("org.apache.thrift.TBase")) {
+				if (jc.isA(THRIFT_CLASS_BASE)) {
 					pojo = generateClassBuilderFor(jc, template);
-				} else if (jc.isA("org.apache.thrift.TEnum")) {
+				} else if (jc.isA(THRIFT_CLASS_ENUM)) {
 					pojo = generateEnumBuilderFor(jc, template);
 				}
 				if (pojo != null) {
@@ -102,9 +125,9 @@ public class ThriftPojoGenerator extends AbstractMojo {
 
 		for (Map.Entry<String, PojoInterface> entry : thirftNameToPojoClassMap.entrySet()) {
 			getLog().info("Writing pojo: " + entry.getValue().toString());
-			writeClass(entry.getValue().getClassPackage().replaceAll("\\.", "/"), entry.getValue().getClassName() + ".java",
+			writeClass(entry.getValue().getClassPackage().replaceAll("\\.", "/"), entry.getValue().getClassName() + JAVA_EXTENSION,
 					entry.getValue().getPojoClass(template, thirftNameToPojoClassMap));
-			writeClass(entry.getValue().getClassPackage().replaceAll("\\.", "/"), entry.getValue().getClassName() + "Bridge.java", entry.getValue()
+			writeClass(entry.getValue().getClassPackage().replaceAll("\\.", "/"), entry.getValue().getClassName() + POJO_POSTFIX_BRIDGE + JAVA_EXTENSION, entry.getValue()
 					.getBridgeClass(template, thirftNameToPojoClassMap));
 		}
 	}
@@ -124,7 +147,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 				PojoClass pojo = new PojoClass(getGeneratedClassPackage(javaClass), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName(),
 						interfaceName, getPojoSuperclass(javaClass));
 				for (JavaParameter p : method.getParameters()) {
-					if (p.getType().isA(new Type("java.util.Map"))) {
+					if (p.getType().isA(new Type(POJO_CLASS_MAP))) {
 						pojo.addMapParameter(p.getType().toGenericString(), p.getName());
 					} else {
 						pojo.addParameter(p.getType().toGenericString(), p.getName());
@@ -139,8 +162,8 @@ public class ThriftPojoGenerator extends AbstractMojo {
 	}
 
 	private String getPojoSuperclass(JavaClass javaClass) {
-		if (javaClass.getSuperClass().getFullyQualifiedName().equals("org.apache.thrift.TException")) {
-			return "java.lang.Exception";
+		if (javaClass.getSuperClass().getFullyQualifiedName().equals(THRIFT_CLASS_EXCEPTION)) {
+			return POJO_CLASS_EXCEPTION;
 		} else {
 			return null;
 		}
@@ -188,7 +211,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		return (outputPostfix != null && !outputPostfix.isEmpty()) ? thirftClassName + outputPostfix : thirftClassName;
 	}
 
-	private void writeClass(String folder, String fileName, String content) throws IOException {
+	protected void writeClass(String folder, String fileName, String content) throws IOException {
 		getLog().debug(String.format("Writing %s in %s", fileName, folder));
 		File pd = new File(outputDirectory, folder);
 		pd.mkdirs();
@@ -208,4 +231,33 @@ public class ThriftPojoGenerator extends AbstractMojo {
 				&& !(method.getParameters().length == 1 && method.getParameters()[0].getType().getFullyQualifiedName()
 						.equals(javaClass.getFullyQualifiedName()));
 	}
+
+    // Setters for testing purposes
+    protected void setProject(MavenProject project) {
+        this.project = project;
+    }
+
+    protected void setSources(List<String> sources) {
+        this.sources = sources;
+    }
+
+    protected void setOutputPostfix(String outputPostfix) {
+        this.outputPostfix = outputPostfix;
+    }
+
+    protected void setInterfaceName(String interfaceName) {
+        this.interfaceName = interfaceName;
+    }
+
+    protected void setDestinationPackage(String destinationPackage) {
+        this.destinationPackage = destinationPackage;
+    }
+
+    protected void setPackageBaseList(List<String> packageBaseList) {
+        this.packageBaseList = packageBaseList;
+    }
+
+    public void setOutputDirectory(File outputDirectory) {
+        this.outputDirectory = outputDirectory;
+    }
 }
