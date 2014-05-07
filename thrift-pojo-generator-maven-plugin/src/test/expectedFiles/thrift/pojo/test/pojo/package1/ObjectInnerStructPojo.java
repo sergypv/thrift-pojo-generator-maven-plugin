@@ -42,4 +42,28 @@ public class ObjectInnerStructPojo implements java.io.Serializable {
 	public void setInnerStructPackage2(thrift.pojo.test.pojo.package2.SimpleStructPackage2Pojo innerStructPackage2) {
 	       this.innerStructPackage2 = innerStructPackage2;
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ObjectInnerStructPojo that = (ObjectInnerStructPojo) o;
+
+        if (stringVariable != null ? !stringVariable.equals(that.stringVariable) : that.stringVariable != null) return false;
+        if (innerStruct != null ? !innerStruct.equals(that.innerStruct) : that.innerStruct != null) return false;
+        if (innerStructPackage2 != null ? !innerStructPackage2.equals(that.innerStructPackage2) : that.innerStructPackage2 != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (stringVariable != null ? (stringVariable.hashCode() * 31) : 0);
+
+        result = 31 * result + (innerStruct != null ? innerStruct.hashCode() : 0);
+        result = 31 * result + (innerStructPackage2 != null ? innerStructPackage2.hashCode() : 0);
+
+        return result;
+    }
 }

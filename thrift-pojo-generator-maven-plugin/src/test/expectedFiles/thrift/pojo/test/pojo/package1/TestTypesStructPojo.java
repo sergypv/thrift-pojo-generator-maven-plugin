@@ -113,4 +113,44 @@ public class TestTypesStructPojo implements java.io.Serializable {
 	public void setComposedStruct(thrift.pojo.test.pojo.package1.ObjectInnerStructPojo composedStruct) {
 	       this.composedStruct = composedStruct;
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TestTypesStructPojo that = (TestTypesStructPojo) o;
+
+        if (simpleString != null ? !simpleString.equals(that.simpleString) : that.simpleString != null) return false;
+        if (nonRequiredString != null ? !nonRequiredString.equals(that.nonRequiredString) : that.nonRequiredString != null) return false;
+        if (number16b != that.number16b) return false;
+        if (number32b != that.number32b) return false;
+        if (number64b != that.number64b) return false;
+        if (booleanValue != that.booleanValue) return false;
+        if (byteValue != that.byteValue) return false;
+        if (doubleValue != that.doubleValue) return false;
+        if (enumType != null ? !enumType.equals(that.enumType) : that.enumType != null) return false;
+        if (ref != null ? !ref.equals(that.ref) : that.ref != null) return false;
+        if (composedStruct != null ? !composedStruct.equals(that.composedStruct) : that.composedStruct != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (simpleString != null ? (simpleString.hashCode() * 31) : 0);
+
+        result = 31 * result + (nonRequiredString != null ? nonRequiredString.hashCode() : 0);
+        result = 31 * result + (int) number16b;
+        result = 31 * result + number32b;
+        result = 31 * result + (int) (number64b ^ (number64b>>> 32));
+        result = 31 * result + (booleanValue ? 1 : 0);
+        result = 31 * result + (int) byteValue;
+        result = 31 * result + (int) (Double.doubleToLongBits(doubleValue) ^ (Double.doubleToLongBits(doubleValue) >>> 32));
+        result = 31 * result + (enumType != null ? enumType.hashCode() : 0);
+        result = 31 * result + (ref != null ? ref.hashCode() : 0);
+        result = 31 * result + (composedStruct != null ? composedStruct.hashCode() : 0);
+
+        return result;
+    }
 }

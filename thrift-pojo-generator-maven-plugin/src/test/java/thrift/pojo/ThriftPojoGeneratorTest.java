@@ -2,6 +2,8 @@ package thrift.pojo;
 
 import junit.framework.Assert;
 import org.apache.maven.project.MavenProject;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -9,12 +11,9 @@ import java.io.IOException;
 import java.util.*;
 
 import org.apache.commons.io.FileUtils;
-import thrift.pojo.test.pojo.package1.TestTypesStructPojo;
-import thrift.pojo.test.pojo.package1.TestTypesStructPojoBridge;
-import thrift.pojo.test.testdata.included.package1.EnumStruct;
-import thrift.pojo.test.testdata.included.package1.ObjectInnerStruct;
-import thrift.pojo.test.testdata.included.package1.SimpleStruct;
-import thrift.pojo.test.testdata.included.package1.TestTypesStruct;
+import thrift.pojo.test.pojo.package1.*;
+import thrift.pojo.test.pojo.package2.SimpleStructPackage2Pojo;
+import thrift.pojo.test.testdata.included.package1.*;
 import thrift.pojo.test.testdata.included.package2.SimpleStructPackage2;
 
 import static org.mockito.Mockito.*;
@@ -25,6 +24,48 @@ import static org.mockito.Mockito.*;
  * expected files are what the generator produces) test those templates
  */
 public class ThriftPojoGeneratorTest {
+    private static PojoMapEntryComparatorInterface genericValueComparator;
+    private static PojoMapEntryComparatorInterface mapValueComparator;
+    private static PojoMapEntryKeyGeneratorInterface genericKeyGenerator;
+    private static PojoMapEntryKeyGeneratorInterface mapKeyGenerator;
+    private static PojoMapEntryKeyGeneratorInterface mapOtherPackKeyGenerator;
+
+    @BeforeClass
+    public static void setup() {
+        genericValueComparator = new PojoMapEntryComparatorInterface<Object, Object>() {
+            @Override
+            public boolean isEquals(Object mapValue, Object pojoMapValue) {
+                return mapValue.equals(pojoMapValue);
+            }
+        };
+        mapValueComparator = new PojoMapEntryComparatorInterface<MapValue, MapValuePojo>() {
+            @Override
+            public boolean isEquals(MapValue mapValue, MapValuePojo pojoMapValue) {
+                return mapValue.getValue() == pojoMapValue.getValue();
+            }
+        };
+
+        genericKeyGenerator = new PojoMapEntryKeyGeneratorInterface<Object, Object>() {
+            @Override
+            public Object getPojoKey(Object key) {
+                return key;
+            }
+        };
+
+        mapKeyGenerator = new PojoMapEntryKeyGeneratorInterface<MapKey, MapKeyPojo>() {
+            @Override
+            public MapKeyPojo getPojoKey(MapKey key) {
+                return new MapKeyPojo(key.getKey());
+            }
+        };
+
+        mapOtherPackKeyGenerator = new PojoMapEntryKeyGeneratorInterface<SimpleStructPackage2,SimpleStructPackage2Pojo>(){
+            @Override
+            public SimpleStructPackage2Pojo getPojoKey(SimpleStructPackage2 key) {
+                return new SimpleStructPackage2Pojo(key.getName());
+            }
+        };
+    }
 
     @Test
     public void testGeneratorProduceFiles() throws Exception {
@@ -77,7 +118,7 @@ public class ThriftPojoGeneratorTest {
     }
 
     @Test
-    public void testProducedFilesAsExpected() throws Exception {
+    public void testProducedBridgeConversionForPlainTypes() throws Exception {
         SimpleStruct simpleStruct = new SimpleStruct("string1");
         SimpleStructPackage2 simpleStructPackage2 = new SimpleStructPackage2("string2");
         ObjectInnerStruct objectInnerStruct = new ObjectInnerStruct("string3", simpleStruct, simpleStructPackage2);
@@ -87,8 +128,48 @@ public class ThriftPojoGeneratorTest {
         TestTypesStructPojo testTypesStructPojo = TestTypesStructPojoBridge.getPojoRepresentation(typeStruct);
         assertProducedPojo(typeStruct, testTypesStructPojo);
         assertProducedPojo(TestTypesStructPojoBridge.getRemoteRepresentation(testTypesStructPojo), testTypesStructPojo);
-        // TODO: Test Maps
         // TODO: Get the Collection functionality up, running and tested
+    }
+
+    @Test
+    public void testProducedBridgeConversionForMaps() throws Exception {
+        Map<MapKey, MapValue> refMap = new HashMap<MapKey, MapValue>();
+        refMap.put(new MapKey("key1"), new MapValue(1));
+
+        Map<Integer, MapValue> refValueMap = new HashMap<Integer, MapValue>();
+        refValueMap.put(2, new MapValue(2));
+
+        Map<MapKey, Integer> refKeyMap = new HashMap<MapKey, Integer>();
+        refKeyMap.put(new MapKey("key3"), 3);
+
+        Map<String, Integer> simpleMap = new HashMap<String, Integer>();
+        simpleMap.put("key4", 4);
+
+        Map<SimpleStructPackage2, Integer> refOtherPackage = new HashMap<SimpleStructPackage2, Integer>();
+        refOtherPackage.put(new SimpleStructPackage2("key5"), 5);
+
+        TestMapStruct testMapStruct = new TestMapStruct(refMap, refValueMap, refKeyMap, simpleMap, refOtherPackage);
+
+        TestMapStructPojo testMapStructPojo = TestMapStructPojoBridge.getPojoRepresentation(testMapStruct);
+        assertProducedPojo(testMapStruct, testMapStructPojo);
+        assertProducedPojo(TestMapStructPojoBridge.getRemoteRepresentation(testMapStructPojo), testMapStructPojo);
+    }
+
+    private void assertProducedPojo(TestMapStruct testMapStruct, TestMapStructPojo testMapStructPojo) {
+        assertMapEquals(testMapStruct.getRefMap(), testMapStructPojo.getRefMap(), mapKeyGenerator, mapValueComparator);
+        assertMapEquals(testMapStruct.getRefValueMap(), testMapStructPojo.getRefValueMap(), genericKeyGenerator, mapValueComparator);
+        assertMapEquals(testMapStruct.getRefKeyMap(), testMapStructPojo.getRefKeyMap(), mapKeyGenerator, genericValueComparator);
+        assertMapEquals(testMapStruct.getSimpleMap(), testMapStructPojo.getSimpleMap(), genericKeyGenerator, genericValueComparator);
+        assertMapEquals(testMapStruct.getRefOtherPackage(), testMapStructPojo.getRefOtherPackage(), mapOtherPackKeyGenerator, genericValueComparator);
+    }
+
+    private <K, V, PK, PV> void assertMapEquals(Map<K, V> map, Map<PK, PV> mapPojo, PojoMapEntryKeyGeneratorInterface<K, PK> keyGeneratorInterface, PojoMapEntryComparatorInterface<V, PV> pojoMapEntryComparatorInterface) {
+        Assert.assertEquals(map.size(), mapPojo.size());
+        for (Map.Entry<K, V> mapEntry : map.entrySet()) {
+            PV pojoValue = mapPojo.get(keyGeneratorInterface.getPojoKey(mapEntry.getKey()));
+            Assert.assertNotNull(pojoValue);
+            Assert.assertTrue(pojoMapEntryComparatorInterface.isEquals(mapEntry.getValue(), pojoValue));
+        }
     }
 
     private void assertProducedPojo(TestTypesStruct typeStruct, TestTypesStructPojo testTypesStructPojo) {
@@ -105,5 +186,14 @@ public class ThriftPojoGeneratorTest {
         Assert.assertEquals(typeStruct.getComposedStruct().getStringVariable(), testTypesStructPojo.getComposedStruct().getStringVariable());
         Assert.assertEquals(typeStruct.getComposedStruct().getInnerStruct().getName(), testTypesStructPojo.getComposedStruct().getInnerStruct().getName());
         Assert.assertEquals(typeStruct.getComposedStruct().getInnerStructPackage2().getName(), testTypesStructPojo.getComposedStruct().getInnerStructPackage2().getName());
+    }
+
+
+    private interface PojoMapEntryComparatorInterface<V, PV> {
+        public boolean isEquals(V mapValue, PV pojoMapValue);
+    }
+
+    private interface PojoMapEntryKeyGeneratorInterface<K, PK> {
+        public PK getPojoKey(K key);
     }
 }
