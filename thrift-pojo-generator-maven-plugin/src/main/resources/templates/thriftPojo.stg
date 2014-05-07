@@ -1,5 +1,7 @@
 group thriftPojo;
 
+import "templates/thriftPojoParameter.stg"
+
 parameterDeclaration(param) ::= <<
 <if(param.isPojo || param.isEnumPojo)>
 private <param.pojoType> <param.nameLowerCase>;
@@ -85,6 +87,24 @@ public class <pojoClassName><if(pojoSuperclassActive)> extends <pojoSuperclass><
 	
 	// Getters and Setters
 	<parameters:parameterGetterSetter()>
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        <pojoClassName> that = (<pojoClassName>) o;
+
+    <parameters:pojoEquals()>
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+    <first(parameters):pojoFirstHashCode()>
+    <rest(parameters):pojoHashCode()>
+        return result;
+    }
 }
 >>
 
@@ -206,4 +226,28 @@ public class <bridgeName(pojoClassName)> {
 	
 <parameters:bridgeRemoteParamMapFunction()>
 }
+>>
+
+pojoFirstHashCode(param) ::= <<
+    <if(param.primitive)>
+    int result = 31 * <param.nameLowerCase>;
+    <else>
+    int result = (<param.nameLowerCase> != null ? (<param.nameLowerCase>.hashCode() * 31) : 0);
+    <endif>
+>>
+
+pojoHashCode(param) ::= <<
+    <if(param.isPrimitive)>
+    result = 31 * result + <param.hashCodeCommand>;
+    <else>
+    result = 31 * result + (<param.nameLowerCase> != null ? <param.nameLowerCase>.hashCode() : 0);
+    <endif>
+>>
+
+pojoEquals(param) ::= <<
+    <if(param.isPrimitive)>
+    if (<param.nameLowerCase> != that.<param.nameLowerCase>) return false;
+    <else>
+    if (<param.nameLowerCase> != null ? !<param.nameLowerCase>.equals(that.<param.nameLowerCase>) : that.<param.nameLowerCase> != null) return false;
+    <endif>
 >>
