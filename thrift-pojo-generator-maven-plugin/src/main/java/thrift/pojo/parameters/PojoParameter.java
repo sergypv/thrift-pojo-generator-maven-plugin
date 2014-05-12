@@ -1,4 +1,7 @@
-package thrift.pojo;
+package thrift.pojo.parameters;
+
+import thrift.pojo.classes.PojoEnum;
+import thrift.pojo.classes.PojoInterface;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -27,7 +30,9 @@ public class PojoParameter {
 	public String pojoType = null;
 	public boolean isPojo = false;
 	public boolean isEnumPojo = false;
-	public boolean isGenericCollection = false;
+	public boolean isGenericMap = false;
+    public boolean isGenericList = false;
+    public boolean isGenericSet = false;
     public boolean isPrimitive;
     public String nameLowerCase;
     public String nameUpperCase;
@@ -122,12 +127,12 @@ public class PojoParameter {
 		this.isEnumPojo = isEnumPojo;
 	}
 
-	protected boolean isGenericCollection() {
-		return isGenericCollection;
+	protected boolean isGenericMap() {
+		return isGenericMap;
 	}
 
-	protected void setGenericCollection(boolean isGenericCollection) {
-		this.isGenericCollection = isGenericCollection;
+	protected void setGenericMap(boolean isGenericMap) {
+		this.isGenericMap = isGenericMap;
 	}
 
     public boolean isPrimitive() {
@@ -136,5 +141,21 @@ public class PojoParameter {
 
     public String getHashCodeCommand() {
         return hashCodeCommand;
+    }
+
+    public boolean isGenericList() {
+        return isGenericList;
+    }
+
+    public void setGenericList(boolean isGenericList) {
+        this.isGenericList = isGenericList;
+    }
+
+    public boolean isGenericSet() {
+        return isGenericSet;
+    }
+
+    public void setGenericSet(boolean isGenericSet) {
+        this.isGenericSet = isGenericSet;
     }
 }

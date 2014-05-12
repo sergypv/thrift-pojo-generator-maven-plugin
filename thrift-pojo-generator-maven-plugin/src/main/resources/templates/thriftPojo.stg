@@ -1,11 +1,9 @@
 group thriftPojo;
 
-import "templates/thriftPojoParameter.stg"
-
 parameterDeclaration(param) ::= <<
 <if(param.isPojo || param.isEnumPojo)>
 private <param.pojoType> <param.nameLowerCase>;
-<elseif(param.isGenericCollection)>
+<elseif(param.isGenericMap)>
 private java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> <param.nameLowerCase>;
 <else>	
 private <param.type> <param.nameLowerCase>;
@@ -37,7 +35,7 @@ public void set<param.nameUpperCase>(<parameterType(param)> <param.nameLowerCase
 >>
 
 parameterType(param) ::= <<
-	<if(param.isPojo || param.isEnumPojo)><param.pojoType><elseif(param.isGenericCollection)>java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\><else><param.type><endif>
+	<if(param.isPojo || param.isEnumPojo)><param.pojoType><elseif(param.isGenericMap)>java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\><else><param.type><endif>
 >>
 
 remoteResourceParamsWithSeparator(param) ::= <<
@@ -45,7 +43,7 @@ remoteResourceParamsWithSeparator(param) ::= <<
 >>
 
 remoteResourceParams(param) ::= <<
-	<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getRemoteRepresentation(pojo.get<param.nameUpperCase>())<elseif(param.isGenericCollection)>getRemoteMapRepresentation<param.nameUpperCase>(pojo.get<param.nameUpperCase>())<else>pojo.get<param.nameUpperCase>()<endif>
+	<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getRemoteRepresentation(pojo.get<param.nameUpperCase>())<elseif(param.isGenericMap)>getRemoteMapRepresentation<param.nameUpperCase>(pojo.get<param.nameUpperCase>())<else>pojo.get<param.nameUpperCase>()<endif>
 >>
 
 constructorRemoteParameterSetter(param) ::= <<
@@ -125,11 +123,11 @@ enumType(param) ::= <<
 >>
 
 bridgeRemoteParam(param) ::= <<
-<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getPojoRepresentation(remote.<param.nameLowerCase>)<elseif(param.isGenericCollection)>getPojoMapRepresentation<param.nameUpperCase>(remote.<param.nameLowerCase>)<else>remote.<param.nameLowerCase><endif>
+<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getPojoRepresentation(remote.<param.nameLowerCase>)<elseif(param.isGenericMap)>getPojoMapRepresentation<param.nameUpperCase>(remote.<param.nameLowerCase>)<else>remote.<param.nameLowerCase><endif>
 >>
 
 bridgeRemoteParamMapFunction(param) ::= <<
-<if(param.isGenericCollection)>
+<if(param.isGenericMap)>
 	private static java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> getPojoMapRepresentation<param.nameUpperCase>(java.util.Map\<<param.pojoKey.type>, <param.pojoValue.type>\> map) {
 		java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> newMap = new java.util.HashMap\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\>(map.size());
 		for (java.util.Map.Entry\<<param.pojoKey.type>, <param.pojoValue.type>\> entry : map.entrySet()) {

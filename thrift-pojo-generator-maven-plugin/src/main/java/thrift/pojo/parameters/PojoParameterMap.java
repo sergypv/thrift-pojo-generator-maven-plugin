@@ -1,4 +1,6 @@
-package thrift.pojo;
+package thrift.pojo.parameters;
+
+import thrift.pojo.classes.PojoInterface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +13,7 @@ public class PojoParameterMap extends PojoParameter {
 
 	public PojoParameterMap(String type, String paramName) {
 		super(type, paramName);
-		this.setGenericCollection(true);
+		this.setGenericMap(true);
 		this.setPojoType("java.util.Map");
 
 		List<String> genericList = new ArrayList<String>(Arrays.asList(type.substring(14, type.length() - 1).split(",")));
@@ -25,16 +27,9 @@ public class PojoParameterMap extends PojoParameter {
 		pojoValue.setPojoType(pojoValue.getType());
 	}
 
+    @Override
 	public void remmapParameters(Map<String, PojoInterface> thirftNameToPojoClassMap) {
 		pojoKey.remmapParameters(thirftNameToPojoClassMap);
 		pojoValue.remmapParameters(thirftNameToPojoClassMap);
-	}
-
-	public PojoParameter getPojoKey() {
-		return pojoKey;
-	}
-
-	public PojoParameter getPojoValue() {
-		return pojoValue;
 	}
 }

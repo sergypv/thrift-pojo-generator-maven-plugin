@@ -9,10 +9,8 @@ import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupDir;
 import org.stringtemplate.v4.STGroupFile;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
@@ -21,6 +19,9 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.Type;
+import thrift.pojo.classes.PojoClass;
+import thrift.pojo.classes.PojoEnum;
+import thrift.pojo.classes.PojoInterface;
 
 /**
  * @goal generate-sources

@@ -47,3 +47,9 @@ struct TestMapStruct {
     4: required map<string,i32> simpleMap;
     5: required map<testObjects2.SimpleStructPackage2, i32> refOtherPackage;
 }
+
+struct TestListStruct {
+    1: required list<i32> simpleList;
+    2: required list<SimpleStruct> refList;
+    3: required list<testObjects2.SimpleStructPackage2> refOtherPackageList;
+}

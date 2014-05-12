@@ -1,4 +1,4 @@
-package thrift.pojo;
+package thrift.pojo.classes;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
+import thrift.pojo.parameters.PojoParameter;
+import thrift.pojo.parameters.PojoParameterMap;
 
 public class PojoClass implements PojoInterface {
 	private static final String POJO_BUILDER = "builder";
@@ -42,6 +44,10 @@ public class PojoClass implements PojoInterface {
 	public void addMapParameter(String type, String paramName) {
 		parameters.add(new PojoParameterMap(type, paramName));
 	}
+
+    public void addListParameter(String type, String paramName){
+
+    }
 
 	@Override
 	public String getPojoClass(STGroup templateGroup, Map<String, PojoInterface> thirftNameToPojoClassMap) {

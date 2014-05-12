@@ -1,4 +1,4 @@
-package thrift.pojo;
+package thrift.pojo.classes;
 
 import java.util.ArrayList;
 import java.util.List;
