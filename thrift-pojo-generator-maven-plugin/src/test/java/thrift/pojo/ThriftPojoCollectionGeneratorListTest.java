@@ -46,10 +46,10 @@ public class ThriftPojoCollectionGeneratorListTest extends ThriftPojoCollectionG
 
     }
 
-    private <L, LP> void assertListEquals(List<L> list, List<LP> listPojo, PojoKeyGeneratorInterface<L, LP> keyGeneratorInterface) {
+    private <L, LP> void assertListEquals(List<L> list, List<LP> listPojo, PojoKeyGeneratorInterface<L, LP> keyGenerator) {
         Assert.assertEquals(list.size(), listPojo.size());
-        for (L object : list) {
-            listPojo.contains(keyGeneratorInterface.getPojoKey(object));
+        for(int i = 0; i < list.size(); i++){
+            Assert.assertEquals(keyGenerator.getPojoKey(list.get(i)), listPojo.get(i));
         }
     }
 }

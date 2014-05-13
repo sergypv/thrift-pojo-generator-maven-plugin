@@ -1,5 +1,6 @@
 package thrift.pojo.parameters;
 
+import thrift.pojo.ThriftPojoGenerator;
 import thrift.pojo.classes.PojoInterface;
 
 import java.util.ArrayList;
@@ -13,14 +14,14 @@ public class PojoParameterList extends PojoParameter{
     public PojoParameterList(String type, String paramName) {
         super(type, paramName);
         setGenericList(true);
-        this.setPojoType("java.util.List");
+        this.setPojoType(ThriftPojoGenerator.POJO_CLASS_LIST);
 
-        List<String> genericList = new ArrayList<String>(Arrays.asList(type.substring(14, type.length() - 1).split(",")));
-        if (genericList.size() != 1) {
-            throw new IllegalArgumentException("Collections must contain two one values");
+        String genericType = type.substring(ThriftPojoGenerator.POJO_CLASS_LIST.length() + 1, type.length() -1);
+        if (genericType.isEmpty()) {
+            throw new IllegalArgumentException("Collections must contain one value");
         }
 
-        listType = new PojoParameter(genericList.get(0), paramName);
+        listType = new PojoParameter(genericType, paramName);
         listType.setPojoType(listType.getType());
     }
 

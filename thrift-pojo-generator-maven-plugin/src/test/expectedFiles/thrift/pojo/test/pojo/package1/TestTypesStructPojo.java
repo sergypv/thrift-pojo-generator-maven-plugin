@@ -5,21 +5,13 @@ public class TestTypesStructPojo implements java.io.Serializable {
 		SimpleString, NonRequiredString, Number16b, Number32b, Number64b, BooleanValue, ByteValue, DoubleValue, EnumType, Ref, ComposedStruct
 	};
 
-		
 	private java.lang.String simpleString;
-		
 	private java.lang.String nonRequiredString;
-		
 	private short number16b;
-		
 	private int number32b;
-		
 	private long number64b;
-		
 	private boolean booleanValue;
-		
 	private byte byteValue;
-		
 	private double doubleValue;
 	private thrift.pojo.test.pojo.package1.EnumStructPojo enumType;
 	private thrift.pojo.test.pojo.package1.SimpleStructPojo ref;

@@ -5,7 +5,11 @@ parameterDeclaration(param) ::= <<
 private <param.pojoType> <param.nameLowerCase>;
 <elseif(param.isGenericMap)>
 private java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> <param.nameLowerCase>;
-<else>	
+<elseif(param.isGenericList)>
+private java.util.List\<<param.listType.pojoType>\> <param.nameLowerCase>;
+<elseif(param.isGenericSet)>
+private java.util.Set\<<param.listType.pojoType>\> <param.nameLowerCase>;
+<else>
 private <param.type> <param.nameLowerCase>;
 <endif>
 >>
@@ -35,7 +39,7 @@ public void set<param.nameUpperCase>(<parameterType(param)> <param.nameLowerCase
 >>
 
 parameterType(param) ::= <<
-	<if(param.isPojo || param.isEnumPojo)><param.pojoType><elseif(param.isGenericMap)>java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\><else><param.type><endif>
+	<if(param.isPojo || param.isEnumPojo)><param.pojoType><elseif(param.isGenericMap)>java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\><elseif(param.isGenericList)>java.util.List\<<param.listType.pojoType>\><elseif(param.isGenericSet)>java.util.Set\<<param.listType.pojoType>\><else><param.type><endif>
 >>
 
 remoteResourceParamsWithSeparator(param) ::= <<
@@ -43,7 +47,7 @@ remoteResourceParamsWithSeparator(param) ::= <<
 >>
 
 remoteResourceParams(param) ::= <<
-	<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getRemoteRepresentation(pojo.get<param.nameUpperCase>())<elseif(param.isGenericMap)>getRemoteMapRepresentation<param.nameUpperCase>(pojo.get<param.nameUpperCase>())<else>pojo.get<param.nameUpperCase>()<endif>
+	<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getRemoteRepresentation(pojo.get<param.nameUpperCase>())<elseif(param.isGenericMap)>getRemoteMapRepresentation<param.nameUpperCase>(pojo.get<param.nameUpperCase>())<elseif(param.isGenericList)>getRemoteListRepresentation<param.nameUpperCase>(pojo.get<param.nameUpperCase>())<elseif(param.isGenericSet)>getRemoteSetRepresentation<param.nameUpperCase>(pojo.get<param.nameUpperCase>())<else>pojo.get<param.nameUpperCase>()<endif>
 >>
 
 constructorRemoteParameterSetter(param) ::= <<
@@ -73,10 +77,10 @@ constructorParameterSetter(param) ::= <<
 <\n>this.<param.nameLowerCase> = <param.nameLowerCase>;
 >>
 
-builder(packageName, remoteClass, pojoClassName, parameters, pojoIntefaceActive, pojoInteface, pojoSuperclassActive, pojoSuperclass) ::= <<
+builder(packageName, remoteClass, pojoClassName, parameters, pojoInterfaceActive, pojoInterface, pojoSuperclassActive, pojoSuperclass) ::= <<
 package <packageName>;
 
-public class <pojoClassName><if(pojoSuperclassActive)> extends <pojoSuperclass><endif><if(pojoIntefaceActive)> implements <pojoInteface><endif> {
+public class <pojoClassName><if(pojoSuperclassActive)> extends <pojoSuperclass><endif><if(pojoInterfaceActive)> implements <pojoInterface><endif> {
 	<parameterEnumDefinition()>
 
 	<parameters:parameterDeclaration()>
@@ -123,7 +127,7 @@ enumType(param) ::= <<
 >>
 
 bridgeRemoteParam(param) ::= <<
-<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getPojoRepresentation(remote.<param.nameLowerCase>)<elseif(param.isGenericMap)>getPojoMapRepresentation<param.nameUpperCase>(remote.<param.nameLowerCase>)<else>remote.<param.nameLowerCase><endif>
+<if(param.isPojo || param.isEnumPojo)><bridgeName(param.pojoType)>.getPojoRepresentation(remote.<param.nameLowerCase>)<elseif(param.isGenericMap)>getPojoMapRepresentation<param.nameUpperCase>(remote.<param.nameLowerCase>)<elseif(param.isGenericList)>getPojoListRepresentation<param.nameUpperCase>(remote.<param.nameLowerCase>)<elseif(param.isGenericSet)>getPojoSetRepresentation<param.nameUpperCase>(remote.<param.nameLowerCase>)<else>remote.<param.nameLowerCase><endif>
 >>
 
 bridgeRemoteParamMapFunction(param) ::= <<
@@ -148,6 +152,29 @@ bridgeRemoteParamMapFunction(param) ::= <<
 		return newMap;
 	}
 	
+<endif>
+>>
+
+bridgeRemoteParamListFunction(param) ::= <<
+<if(param.isGenericList)>
+	private static java.util.List\<<param.listType.pojoType>\> getPojoListRepresentation<param.nameUpperCase>(java.util.List\<<param.listType.type>\> list) {
+		java.util.List\<<param.listType.pojoType>\> newList = new java.util.ArrayList\<<param.listType.pojoType>\>(list.size());
+		for (<param.listType.type> listEntry : list) {
+			newList.add(<if(param.listType.isPojo)><bridgeName(param.listType.pojoType)>.getPojoRepresentation(listEntry)<else>listEntry<endif>);
+		}
+
+		return newList;
+	}
+
+	private static java.util.List\<<param.listType.type>\> getRemoteListRepresentation<param.nameUpperCase>(java.util.List\<<param.listType.pojoType>\> list) {
+		java.util.List\<<param.listType.type>\> newList = new java.util.ArrayList\<<param.listType.type>\>(list.size());
+		for (<param.listType.pojoType> listEntry : list) {
+			newList.add(<if(param.listType.isPojo)><bridgeName(param.listType.pojoType)>.getRemoteRepresentation(listEntry)<else>listEntry<endif>);
+		}
+
+		return newList;
+	}
+
 <endif>
 >>
 
@@ -181,7 +208,7 @@ public class <bridgeName(pojoClassName)> {
 	public static <pojoClassName> getPojoRepresentation(<remoteClass> remote) {
 		return new <pojoClassName>(<trunc(parameters):bridgeRemoteParamWithSeparator()><last(parameters):bridgeRemoteParam()>);
 	}
-	
+
 	public static <remoteClass> getRemoteRepresentation(<pojoClassName> pojo){
 		return new <remoteClass>(<trunc(parameters):remoteResourceParamsWithSeparator()><last(parameters):remoteResourceParams()>);
 	}
@@ -223,6 +250,7 @@ public class <bridgeName(pojoClassName)> {
 	}
 	
 <parameters:bridgeRemoteParamMapFunction()>
+<parameters:bridgeRemoteParamListFunction()>
 }
 >>
 

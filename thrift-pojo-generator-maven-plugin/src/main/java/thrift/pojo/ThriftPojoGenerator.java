@@ -34,6 +34,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
     private static final String THRIFT_CLASS_EXCEPTION = "org.apache.thrift.TException";
     private static final String POJO_CLASS_EXCEPTION = "java.lang.Exception";
     private static final String POJO_CLASS_MAP = "java.util.Map";
+    public static final String POJO_CLASS_LIST = "java.util.List";
     private static final String JAVA_EXTENSION = ".java";
     private static final String POJO_POSTFIX_BRIDGE = "Bridge";
 
@@ -151,7 +152,9 @@ public class ThriftPojoGenerator extends AbstractMojo {
 				for (JavaParameter p : method.getParameters()) {
 					if (p.getType().isA(new Type(POJO_CLASS_MAP))) {
 						pojo.addMapParameter(p.getType().toGenericString(), p.getName());
-					} else {
+					} else if(p.getType().isA(new Type(POJO_CLASS_LIST))){
+                        pojo.addListParameter(p.getType().toGenericString(), p.getName());
+                    }else {
 						pojo.addParameter(p.getType().toGenericString(), p.getName());
 					}
 				}

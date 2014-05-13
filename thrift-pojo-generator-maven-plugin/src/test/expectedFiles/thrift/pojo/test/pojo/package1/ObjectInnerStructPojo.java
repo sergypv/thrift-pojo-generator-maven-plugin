@@ -5,7 +5,6 @@ public class ObjectInnerStructPojo implements java.io.Serializable {
 		StringVariable, InnerStruct, InnerStructPackage2
 	};
 
-		
 	private java.lang.String stringVariable;
 	private thrift.pojo.test.pojo.package1.SimpleStructPojo innerStruct;
 	private thrift.pojo.test.pojo.package2.SimpleStructPackage2Pojo innerStructPackage2;

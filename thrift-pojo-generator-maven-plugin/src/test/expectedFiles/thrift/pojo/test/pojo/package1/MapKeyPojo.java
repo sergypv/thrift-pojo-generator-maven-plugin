@@ -5,7 +5,6 @@ public class MapKeyPojo implements java.io.Serializable {
 	Key
 	};
 
-		
 	private java.lang.String key;
 
 	public MapKeyPojo() {

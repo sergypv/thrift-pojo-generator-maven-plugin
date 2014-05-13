@@ -5,7 +5,6 @@ public class SimpleStructPackage2Pojo implements java.io.Serializable {
 	Name
 	};
 
-		
 	private java.lang.String name;
 
 	public SimpleStructPackage2Pojo() {

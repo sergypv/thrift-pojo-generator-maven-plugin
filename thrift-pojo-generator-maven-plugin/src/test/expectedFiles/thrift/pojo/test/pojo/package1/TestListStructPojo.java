@@ -5,18 +5,15 @@ public class TestListStructPojo implements java.io.Serializable {
 		SimpleList, RefList, RefOtherPackageList
 	};
 
-		
 	private java.util.List<java.lang.Integer> simpleList;
-		
-	private java.util.List<thrift.pojo.test.testdata.included.package1.SimpleStruct> refList;
-		
-	private java.util.List<thrift.pojo.test.testdata.included.package2.SimpleStructPackage2> refOtherPackageList;
+	private java.util.List<thrift.pojo.test.pojo.package1.SimpleStructPojo> refList;
+	private java.util.List<thrift.pojo.test.pojo.package2.SimpleStructPackage2Pojo> refOtherPackageList;
 
 	public TestListStructPojo() {
 		super();
 	}
 
-	public TestListStructPojo(java.util.List<java.lang.Integer> simpleList,java.util.List<thrift.pojo.test.testdata.included.package1.SimpleStruct> refList,java.util.List<thrift.pojo.test.testdata.included.package2.SimpleStructPackage2> refOtherPackageList) {
+	public TestListStructPojo(java.util.List<java.lang.Integer> simpleList,java.util.List<thrift.pojo.test.pojo.package1.SimpleStructPojo> refList,java.util.List<thrift.pojo.test.pojo.package2.SimpleStructPackage2Pojo> refOtherPackageList) {
 		super();
 
 		this.simpleList = simpleList;
@@ -32,16 +29,16 @@ public class TestListStructPojo implements java.io.Serializable {
 	public void setSimpleList(java.util.List<java.lang.Integer> simpleList) {
 	       this.simpleList = simpleList;
 	}
-	public java.util.List<thrift.pojo.test.testdata.included.package1.SimpleStruct> getRefList() {
+	public java.util.List<thrift.pojo.test.pojo.package1.SimpleStructPojo> getRefList() {
 	       return refList;
 	}
-	public void setRefList(java.util.List<thrift.pojo.test.testdata.included.package1.SimpleStruct> refList) {
+	public void setRefList(java.util.List<thrift.pojo.test.pojo.package1.SimpleStructPojo> refList) {
 	       this.refList = refList;
 	}
-	public java.util.List<thrift.pojo.test.testdata.included.package2.SimpleStructPackage2> getRefOtherPackageList() {
+	public java.util.List<thrift.pojo.test.pojo.package2.SimpleStructPackage2Pojo> getRefOtherPackageList() {
 	       return refOtherPackageList;
 	}
-	public void setRefOtherPackageList(java.util.List<thrift.pojo.test.testdata.included.package2.SimpleStructPackage2> refOtherPackageList) {
+	public void setRefOtherPackageList(java.util.List<thrift.pojo.test.pojo.package2.SimpleStructPackage2Pojo> refOtherPackageList) {
 	       this.refOtherPackageList = refOtherPackageList;
 	}
 

@@ -5,7 +5,6 @@ public class MapValuePojo implements java.io.Serializable {
 	Value
 	};
 
-		
 	private int value;
 
 	public MapValuePojo() {

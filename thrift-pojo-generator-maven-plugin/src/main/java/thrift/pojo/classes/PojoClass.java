@@ -7,6 +7,7 @@ import java.util.Map;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import thrift.pojo.parameters.PojoParameter;
+import thrift.pojo.parameters.PojoParameterList;
 import thrift.pojo.parameters.PojoParameterMap;
 
 public class PojoClass implements PojoInterface {
@@ -15,8 +16,8 @@ public class PojoClass implements PojoInterface {
 	private static final String POJO_PACKAGE = "packageName";
 	private static final String POJO_CLASS = "pojoClassName";
 	private static final String POJO_PARAMETERS = "parameters";
-	private static final String POJO_INTEFACE = "pojoInteface";
-	private static final String POJO_INTEFACE_ACTIVE = "pojoIntefaceActive";
+	private static final String POJO_INTERFACE = "pojoInterface";
+	private static final String POJO_INTERFACE_ACTIVE = "pojoInterfaceActive";
 	private static final String REMOTE_CLASS = "remoteClass";
 	private static final String POJO_SUPERCLASS_ACTIVE = "pojoSuperclassActive";
 	private static final String POJO_SUPERCLASS = "pojoSuperclass";
@@ -46,7 +47,7 @@ public class PojoClass implements PojoInterface {
 	}
 
     public void addListParameter(String type, String paramName){
-
+        parameters.add(new PojoParameterList(type,paramName));
     }
 
 	@Override
@@ -55,8 +56,8 @@ public class PojoClass implements PojoInterface {
 
 		remmapParameters(thirftNameToPojoClassMap);
 		populateTemplateParams(template);
-		template.add(POJO_INTEFACE_ACTIVE, (this.interfaceName != null && !this.interfaceName.isEmpty()));
-		template.add(POJO_INTEFACE, interfaceName);
+		template.add(POJO_INTERFACE_ACTIVE, (this.interfaceName != null && !this.interfaceName.isEmpty()));
+		template.add(POJO_INTERFACE, interfaceName);
 		template.add(POJO_SUPERCLASS_ACTIVE, (pojoSuperclas != null && !pojoSuperclas.isEmpty()));
 		template.add(POJO_SUPERCLASS, pojoSuperclas);
 
