@@ -9,6 +9,7 @@ import org.stringtemplate.v4.STGroup;
 import thrift.pojo.parameters.PojoParameter;
 import thrift.pojo.parameters.PojoParameterList;
 import thrift.pojo.parameters.PojoParameterMap;
+import thrift.pojo.parameters.PojoParameterSet;
 
 public class PojoClass implements PojoInterface {
 	private static final String POJO_BUILDER = "builder";
@@ -48,6 +49,10 @@ public class PojoClass implements PojoInterface {
 
     public void addListParameter(String type, String paramName){
         parameters.add(new PojoParameterList(type,paramName));
+    }
+
+    public void addSetParameter(String type, String paramName){
+        parameters.add(new PojoParameterSet(type,paramName));
     }
 
 	@Override

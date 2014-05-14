@@ -178,6 +178,29 @@ bridgeRemoteParamListFunction(param) ::= <<
 <endif>
 >>
 
+bridgeRemoteParamSetFunction(param) ::= <<
+<if(param.isGenericSet)>
+	private static java.util.Set\<<param.listType.pojoType>\> getPojoSetRepresentation<param.nameUpperCase>(java.util.Set\<<param.listType.type>\> set) {
+		java.util.Set\<<param.listType.pojoType>\> newSet = new java.util.HashSet\<<param.listType.pojoType>\>(set.size());
+		for (<param.listType.type> setEntry: set) {
+			newSet.add(<if(param.listType.isPojo)><bridgeName(param.listType.pojoType)>.getPojoRepresentation(setEntry)<else>setEntry<endif>);
+		}
+
+		return newSet;
+	}
+
+	private static java.util.Set\<<param.listType.type>\> getRemoteSetRepresentation<param.nameUpperCase>(java.util.Set\<<param.listType.pojoType>\> set) {
+		java.util.Set\<<param.listType.type>\> newSet = new java.util.HashSet\<<param.listType.type>\>(set.size());
+		for (<param.listType.pojoType> setEntry : set) {
+			newSet.add(<if(param.listType.isPojo)><bridgeName(param.listType.pojoType)>.getRemoteRepresentation(setEntry)<else>setEntry<endif>);
+		}
+
+		return newSet;
+	}
+
+<endif>
+>>
+
 bridgeRemoteParamWithSeparator(param) ::= <<
 <bridgeRemoteParam(param)>, 
 >>
@@ -251,6 +274,7 @@ public class <bridgeName(pojoClassName)> {
 	
 <parameters:bridgeRemoteParamMapFunction()>
 <parameters:bridgeRemoteParamListFunction()>
+<parameters:bridgeRemoteParamSetFunction()>
 }
 >>
 

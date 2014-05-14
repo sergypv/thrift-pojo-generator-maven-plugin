@@ -46,7 +46,7 @@ public class ThriftPojoCollectionGeneratorTest extends ThriftPojoCollectionGener
         thriftPojoGenerator.execute();
 
         // Verify files
-        Assert.assertEquals(20, thriftPojoGenerator.fileToContentMap.size());
+        Assert.assertEquals(22, thriftPojoGenerator.fileToContentMap.size());
 
         String[] a = {"java"};
         String expectedFilesPath = "src/test/expectedFiles";
