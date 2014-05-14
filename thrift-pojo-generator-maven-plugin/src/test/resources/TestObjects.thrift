@@ -53,3 +53,10 @@ struct TestListStruct {
     2: required list<SimpleStruct> refList;
     3: required list<testObjects2.SimpleStructPackage2> refOtherPackageList;
 }
+
+struct TestSetStruct {
+    1: required set<i32> simpleList;
+    2: required set<SimpleStruct> refList;
+    3: required set<testObjects2.SimpleStructPackage2> refOtherPackageList;
+}
+
