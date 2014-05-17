@@ -22,21 +22,24 @@ public class PojoClass implements PojoInterface {
 	private static final String REMOTE_CLASS = "remoteClass";
 	private static final String POJO_SUPERCLASS_ACTIVE = "pojoSuperclassActive";
 	private static final String POJO_SUPERCLASS = "pojoSuperclass";
+    private static final String POJO_INCLUDE_FIELDS_ENUM = "pojoIncludeFieldsEnum";
 
-	private List<PojoParameter> parameters = new LinkedList<PojoParameter>();
+    private List<PojoParameter> parameters = new LinkedList<PojoParameter>();
 	private String classPackage;
 	private String className;
 	private String remoteName;
 	private String interfaceName;
 	private String pojoSuperclas;
+    private boolean includeFieldsEnum = false;
 
-	public PojoClass(String classPackage, String className, String remoteClass, String interfaceName, String pojoSuperclas) {
+	public PojoClass(String classPackage, String className, String remoteClass, String interfaceName, String pojoSuperclas, boolean includeFieldsEnum) {
 		super();
 		this.classPackage = classPackage;
 		this.className = className;
 		this.remoteName = remoteClass;
 		this.interfaceName = interfaceName;
 		this.pojoSuperclas = pojoSuperclas;
+        this.includeFieldsEnum = includeFieldsEnum;
 	}
 
 	public void addParameter(String type, String paramName) {
@@ -65,6 +68,7 @@ public class PojoClass implements PojoInterface {
 		template.add(POJO_INTERFACE, interfaceName);
 		template.add(POJO_SUPERCLASS_ACTIVE, (pojoSuperclas != null && !pojoSuperclas.isEmpty()));
 		template.add(POJO_SUPERCLASS, pojoSuperclas);
+        template.add(POJO_INCLUDE_FIELDS_ENUM, includeFieldsEnum);
 
 		return template.render();
 	}

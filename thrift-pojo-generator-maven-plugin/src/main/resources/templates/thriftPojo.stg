@@ -77,11 +77,11 @@ constructorParameterSetter(param) ::= <<
 <\n>this.<param.nameLowerCase> = <param.nameLowerCase>;
 >>
 
-builder(packageName, remoteClass, pojoClassName, parameters, pojoInterfaceActive, pojoInterface, pojoSuperclassActive, pojoSuperclass) ::= <<
+builder(packageName, remoteClass, pojoClassName, parameters, pojoInterfaceActive, pojoInterface, pojoSuperclassActive, pojoSuperclass, pojoIncludeFieldsEnum) ::= <<
 package <packageName>;
 
 public class <pojoClassName><if(pojoSuperclassActive)> extends <pojoSuperclass><endif><if(pojoInterfaceActive)> implements <pojoInterface><endif> {
-	<parameterEnumDefinition()>
+	<if(pojoIncludeFieldsEnum)><parameterEnumDefinition()><endif>
 
 	<parameters:parameterDeclaration()>
 	<pojoConstructor()>

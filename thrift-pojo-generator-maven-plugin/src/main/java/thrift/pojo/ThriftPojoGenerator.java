@@ -91,6 +91,13 @@ public class ThriftPojoGenerator extends AbstractMojo {
 	 */
 	private List<String> packageBaseList = null;
 
+    /**
+     * Determine if a Fields enum should be included
+     *
+     * @parameter
+     */
+    private String includeFieldsEnum = "false";
+
 	@Override
 	public void execute() throws MojoExecutionException{
 		try {
@@ -149,7 +156,7 @@ public class ThriftPojoGenerator extends AbstractMojo {
 		for (JavaMethod method : javaClass.getMethods()) {
 			if (isAllArgumentsConstructor(javaClass, method)) {
 				PojoClass pojo = new PojoClass(getGeneratedClassPackage(javaClass), getPojoClassName(javaClass.getName()), javaClass.getFullyQualifiedName(),
-						interfaceName, getPojoSuperclass(javaClass));
+						interfaceName, getPojoSuperclass(javaClass), Boolean.parseBoolean(includeFieldsEnum));
 				for (JavaParameter p : method.getParameters()) {
 					if (p.getType().isA(new Type(POJO_CLASS_MAP))) {
 						pojo.addMapParameter(p.getType().toGenericString(), p.getName());
@@ -267,5 +274,9 @@ public class ThriftPojoGenerator extends AbstractMojo {
 
     public void setOutputDirectory(File outputDirectory) {
         this.outputDirectory = outputDirectory;
+    }
+
+    public void setIncludeFieldsEnum(String includeFieldsEnum) {
+        this.includeFieldsEnum = includeFieldsEnum;
     }
 }

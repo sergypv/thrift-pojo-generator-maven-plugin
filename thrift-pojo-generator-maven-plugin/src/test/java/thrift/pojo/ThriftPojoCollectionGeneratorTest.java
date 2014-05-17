@@ -21,6 +21,7 @@ public class ThriftPojoCollectionGeneratorTest extends ThriftPojoCollectionGener
     @Test
     public void testGeneratorProduceFiles() throws Exception {
         ThriftPojoGeneratorMock thriftPojoGenerator = new ThriftPojoGeneratorMock();
+        thriftPojoGenerator.setIncludeFieldsEnum("True");
 
         MavenProject mavenProjectMock = mock(MavenProject.class);
         thriftPojoGenerator.setProject(mavenProjectMock);
