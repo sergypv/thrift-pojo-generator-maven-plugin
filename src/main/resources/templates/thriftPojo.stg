@@ -280,7 +280,7 @@ public class <bridgeName(pojoClassName)> {
 
 pojoFirstHashCode(param) ::= <<
     <if(param.primitive)>
-    int result = 31 * <param.nameLowerCase>;
+    int result = 31 * <param.hashCodeCommand>;
     <else>
     int result = (<param.nameLowerCase> != null ? (<param.nameLowerCase>.hashCode() * 31) : 0);
     <endif>
