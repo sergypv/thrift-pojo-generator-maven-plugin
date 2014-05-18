@@ -136,7 +136,7 @@ bridgeRemoteParamMapFunction(param) ::= <<
 		java.util.Map\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> newMap = new java.util.HashMap\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\>(map.size());
 		for (java.util.Map.Entry\<<param.pojoKey.type>, <param.pojoValue.type>\> entry : map.entrySet()) {
 			newMap.put(<if(param.pojoKey.isPojo)><bridgeName(param.pojoKey.pojoType)>.getPojoRepresentation(entry.getKey())<else>entry.getKey()<endif>,
-					   <if(param.pojoValue.isPojo)><bridgeName(param.pojoValue.pojoType)>.getPojoRepresentation(entry.getValue())<else>entry.getValue()<endif>);
+					   <if(param.pojoValue.isPojo || param.pojoValue.isEnumPojo)><bridgeName(param.pojoValue.pojoType)>.getPojoRepresentation(entry.getValue())<else>entry.getValue()<endif>);
 		}
 		
 		return newMap;
@@ -146,7 +146,7 @@ bridgeRemoteParamMapFunction(param) ::= <<
 		java.util.Map\<<param.pojoKey.type>, <param.pojoValue.type>\> newMap = new java.util.HashMap\<<param.pojoKey.type>, <param.pojoValue.type>\>(map.size());
 		for (java.util.Map.Entry\<<param.pojoKey.pojoType>, <param.pojoValue.pojoType>\> entry : map.entrySet()) {
 			newMap.put(<if(param.pojoKey.isPojo)><bridgeName(param.pojoKey.pojoType)>.getRemoteRepresentation(entry.getKey())<else>entry.getKey()<endif>,
-					   <if(param.pojoValue.isPojo)><bridgeName(param.pojoValue.pojoType)>.getRemoteRepresentation(entry.getValue())<else>entry.getValue()<endif>);
+					   <if(param.pojoValue.isPojo || param.pojoValue.isEnumPojo)><bridgeName(param.pojoValue.pojoType)>.getRemoteRepresentation(entry.getValue())<else>entry.getValue()<endif>);
 		}
 		
 		return newMap;
@@ -160,7 +160,7 @@ bridgeRemoteParamListFunction(param) ::= <<
 	private static java.util.List\<<param.listType.pojoType>\> getPojoListRepresentation<param.nameUpperCase>(java.util.List\<<param.listType.type>\> list) {
 		java.util.List\<<param.listType.pojoType>\> newList = new java.util.ArrayList\<<param.listType.pojoType>\>(list.size());
 		for (<param.listType.type> listEntry : list) {
-			newList.add(<if(param.listType.isPojo)><bridgeName(param.listType.pojoType)>.getPojoRepresentation(listEntry)<else>listEntry<endif>);
+			newList.add(<if(param.listType.isPojo || param.listType.isEnumPojo)><bridgeName(param.listType.pojoType)>.getPojoRepresentation(listEntry)<else>listEntry<endif>);
 		}
 
 		return newList;
@@ -169,7 +169,7 @@ bridgeRemoteParamListFunction(param) ::= <<
 	private static java.util.List\<<param.listType.type>\> getRemoteListRepresentation<param.nameUpperCase>(java.util.List\<<param.listType.pojoType>\> list) {
 		java.util.List\<<param.listType.type>\> newList = new java.util.ArrayList\<<param.listType.type>\>(list.size());
 		for (<param.listType.pojoType> listEntry : list) {
-			newList.add(<if(param.listType.isPojo)><bridgeName(param.listType.pojoType)>.getRemoteRepresentation(listEntry)<else>listEntry<endif>);
+			newList.add(<if(param.listType.isPojo || param.listType.isEnumPojo)><bridgeName(param.listType.pojoType)>.getRemoteRepresentation(listEntry)<else>listEntry<endif>);
 		}
 
 		return newList;
@@ -183,7 +183,7 @@ bridgeRemoteParamSetFunction(param) ::= <<
 	private static java.util.Set\<<param.listType.pojoType>\> getPojoSetRepresentation<param.nameUpperCase>(java.util.Set\<<param.listType.type>\> set) {
 		java.util.Set\<<param.listType.pojoType>\> newSet = new java.util.HashSet\<<param.listType.pojoType>\>(set.size());
 		for (<param.listType.type> setEntry: set) {
-			newSet.add(<if(param.listType.isPojo)><bridgeName(param.listType.pojoType)>.getPojoRepresentation(setEntry)<else>setEntry<endif>);
+			newSet.add(<if(param.listType.isPojo || param.listType.isEnumPojo)><bridgeName(param.listType.pojoType)>.getPojoRepresentation(setEntry)<else>setEntry<endif>);
 		}
 
 		return newSet;
@@ -192,7 +192,7 @@ bridgeRemoteParamSetFunction(param) ::= <<
 	private static java.util.Set\<<param.listType.type>\> getRemoteSetRepresentation<param.nameUpperCase>(java.util.Set\<<param.listType.pojoType>\> set) {
 		java.util.Set\<<param.listType.type>\> newSet = new java.util.HashSet\<<param.listType.type>\>(set.size());
 		for (<param.listType.pojoType> setEntry : set) {
-			newSet.add(<if(param.listType.isPojo)><bridgeName(param.listType.pojoType)>.getRemoteRepresentation(setEntry)<else>setEntry<endif>);
+			newSet.add(<if(param.listType.isPojo || param.listType.isEnumPojo)><bridgeName(param.listType.pojoType)>.getRemoteRepresentation(setEntry)<else>setEntry<endif>);
 		}
 
 		return newSet;
