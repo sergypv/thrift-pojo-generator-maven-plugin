@@ -2,7 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>Apache Thrift POJO generator</name>
-	<groupId>thrift.pojo</groupId>
+    <description>Generates POJO classes out of Thrift classes</description>
+    <url>https://github.com/sergypv/thrift-pojo-generator-maven-plugin</url>
+	<groupId>org.disges</groupId>
 	<artifactId>thrift-pojo-generator-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
 	<version>1.0</version>
@@ -11,16 +13,23 @@
 	</properties>
 	<developers>
 		<developer>
-			<id>sergyp</id>
-			<name>Sergio Pereira</name>
-			<email>sergyp@gmail.com</email>
+            <id>sergypv</id>
+            <name>Sergio Pereira</name>
+            <email>sergyp@gmail.com</email>
+            <url>https://github.com/sergypv</url>
 		</developer>
 	</developers>
-	<licenses>
-		<license>
-			<name>BSD License</name>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>The MIT License (MIT)</name>
+            <url>http://http://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/sergypv/thrift-pojo-generator-maven-plugin</url>
+        <connection>scm:git:git://github.com/sergypv/thrift-pojo-generator-maven-plugin.git</connection>
+    </scm>
 	<build>
 		<plugins>
 			<plugin>
