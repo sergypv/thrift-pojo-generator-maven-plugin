@@ -26,7 +26,7 @@ Install this Maven plugin and add the following configuration to your pom.xml fi
 		<plugins>
 		[ ... ]
             <plugin>
-                <groupId>thrift.pojo</groupId>
+                <groupId>org.disges</groupId>
                 <artifactId>thrift-pojo-generator-maven-plugin</artifactId>
                 <version>1.0</version>
                 <executions>
