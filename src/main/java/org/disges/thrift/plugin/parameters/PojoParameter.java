@@ -1,7 +1,7 @@
-package thrift.pojo.parameters;
+package org.disges.thrift.plugin.parameters;
 
-import thrift.pojo.classes.PojoEnum;
-import thrift.pojo.classes.PojoInterface;
+import org.disges.thrift.plugin.classes.PojoEnum;
+import org.disges.thrift.plugin.classes.PojoInterface;
 
 import java.util.HashSet;
 import java.util.Map;

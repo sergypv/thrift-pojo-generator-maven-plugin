@@ -1,6 +1,6 @@
-package thrift.pojo.parameters;
+package org.disges.thrift.plugin.parameters;
 
-import thrift.pojo.ThriftPojoGenerator;
+import org.disges.thrift.plugin.ThriftPojoGenerator;
 
 public class PojoParameterSet extends PojoParameterCollectionAbstract{
     public PojoParameterSet(String type, String paramName) {

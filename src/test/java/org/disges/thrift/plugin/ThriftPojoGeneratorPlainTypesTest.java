@@ -1,4 +1,4 @@
-package thrift.pojo;
+package org.disges.thrift.plugin;
 
 import junit.framework.Assert;
 import org.disges.thrift.plugin.testdata.objects.included.package1.EnumStruct;

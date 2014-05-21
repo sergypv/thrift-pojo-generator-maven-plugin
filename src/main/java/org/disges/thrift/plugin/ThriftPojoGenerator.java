@@ -1,4 +1,4 @@
-package thrift.pojo;
+package org.disges.thrift.plugin;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -19,9 +19,9 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.Type;
-import thrift.pojo.classes.PojoClass;
-import thrift.pojo.classes.PojoEnum;
-import thrift.pojo.classes.PojoInterface;
+import org.disges.thrift.plugin.classes.PojoClass;
+import org.disges.thrift.plugin.classes.PojoEnum;
+import org.disges.thrift.plugin.classes.PojoInterface;
 
 /**
  * @goal generate-sources

@@ -1,4 +1,4 @@
-package thrift.pojo.classes;
+package org.disges.thrift.plugin.classes;
 
 import java.util.Map;
 

@@ -1,7 +1,8 @@
-package thrift.pojo;
+package org.disges.thrift.plugin;
 
 import junit.framework.Assert;
 import org.apache.maven.project.MavenProject;
+import org.disges.thrift.plugin.ThriftPojoGenerator;
 import org.junit.Test;
 
 import java.io.File;

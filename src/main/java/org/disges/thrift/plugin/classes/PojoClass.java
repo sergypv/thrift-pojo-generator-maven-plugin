@@ -1,4 +1,4 @@
-package thrift.pojo.classes;
+package org.disges.thrift.plugin.classes;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.Map;
 
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
-import thrift.pojo.parameters.PojoParameter;
-import thrift.pojo.parameters.PojoParameterList;
-import thrift.pojo.parameters.PojoParameterMap;
-import thrift.pojo.parameters.PojoParameterSet;
+import org.disges.thrift.plugin.parameters.PojoParameter;
+import org.disges.thrift.plugin.parameters.PojoParameterList;
+import org.disges.thrift.plugin.parameters.PojoParameterMap;
+import org.disges.thrift.plugin.parameters.PojoParameterSet;
 
 public class PojoClass implements PojoInterface {
 	private static final String POJO_BUILDER = "builder";

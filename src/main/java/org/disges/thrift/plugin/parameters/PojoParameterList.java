@@ -1,12 +1,6 @@
-package thrift.pojo.parameters;
+package org.disges.thrift.plugin.parameters;
 
-import thrift.pojo.ThriftPojoGenerator;
-import thrift.pojo.classes.PojoInterface;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import org.disges.thrift.plugin.ThriftPojoGenerator;
 
 public class PojoParameterList extends PojoParameterCollectionAbstract{
     public PojoParameterList(String type, String paramName) {
