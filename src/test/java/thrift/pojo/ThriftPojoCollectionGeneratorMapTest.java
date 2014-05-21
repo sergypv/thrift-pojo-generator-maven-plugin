@@ -1,16 +1,16 @@
 package thrift.pojo;
 
 import junit.framework.Assert;
+import org.disges.thrift.plugin.testdata.objects.included.package1.MapKey;
+import org.disges.thrift.plugin.testdata.objects.included.package1.MapValue;
+import org.disges.thrift.plugin.testdata.objects.included.package1.TestMapStruct;
+import org.disges.thrift.plugin.testdata.objects.included.package2.SimpleStructPackage2;
+import org.disges.thrift.plugin.testdata.pojo.package1.MapKeyPojo;
+import org.disges.thrift.plugin.testdata.pojo.package1.MapValuePojo;
+import org.disges.thrift.plugin.testdata.pojo.package1.TestMapStructPojo;
+import org.disges.thrift.plugin.testdata.pojo.package1.TestMapStructPojoBridge;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import thrift.pojo.test.pojo.package1.MapKeyPojo;
-import thrift.pojo.test.pojo.package1.MapValuePojo;
-import thrift.pojo.test.pojo.package1.TestMapStructPojo;
-import thrift.pojo.test.pojo.package1.TestMapStructPojoBridge;
-import thrift.pojo.test.testdata.included.package1.MapKey;
-import thrift.pojo.test.testdata.included.package1.MapValue;
-import thrift.pojo.test.testdata.included.package1.TestMapStruct;
-import thrift.pojo.test.testdata.included.package2.SimpleStructPackage2;
 
 import java.util.HashMap;
 import java.util.Map;

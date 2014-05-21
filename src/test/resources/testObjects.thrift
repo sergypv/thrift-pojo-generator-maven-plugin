@@ -1,7 +1,7 @@
 include "testObjects2.thrift"
 include "testObjects3.thrift"
 
-namespace java thrift.pojo.test.testdata.included.package1
+namespace java org.disges.thrift.plugin.testdata.objects.included.package1
 
 enum EnumStruct {
     VAL1 = 1,

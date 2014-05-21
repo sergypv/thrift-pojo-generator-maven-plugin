@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
  * test first that the generator generates them against a predefined set of files, and then (knowing that the
  * expected files are what the generator produces) test those templates
  */
-public class ThriftPojoCollectionGeneratorTest extends ThriftPojoCollectionGeneratorAbstractTest {
+public class ThriftPojoCollectionGeneratorTest {
     @Test
     public void testGeneratorProduceFiles() throws Exception {
         ThriftPojoGeneratorMock thriftPojoGenerator = new ThriftPojoGeneratorMock();
@@ -29,14 +29,14 @@ public class ThriftPojoCollectionGeneratorTest extends ThriftPojoCollectionGener
         thriftPojoGenerator.setOutputDirectory(outputFile);
         thriftPojoGenerator.setOutputPostfix("Pojo");
         thriftPojoGenerator.setInterfaceName("java.io.Serializable");
-        thriftPojoGenerator.setDestinationPackage("thrift.pojo.test.pojo");
+        thriftPojoGenerator.setDestinationPackage("org.disges.thrift.plugin.testdata.pojo");
 
         List<String> sourceList = new ArrayList<String>();
-        sourceList.add("src/test/resources/thrift-java");
+        sourceList.add("src/test/java");
         thriftPojoGenerator.setSources(sourceList);
 
         List<String> packageList = new ArrayList<String>();
-        packageList.add("thrift.pojo.test.testdata.included");
+        packageList.add("org.disges.thrift.plugin.testdata.objects.included");
         thriftPojoGenerator.setPackageBaseList(packageList);
 
         // Stub testing methods
@@ -50,13 +50,15 @@ public class ThriftPojoCollectionGeneratorTest extends ThriftPojoCollectionGener
         Assert.assertEquals(22, thriftPojoGenerator.fileToContentMap.size());
 
         String[] a = {"java"};
-        String expectedFilesPath = "src/test/expectedFiles";
+        String expectedFilesPath = "src/test/java";
         Iterator<File> expectedFiles = FileUtils.iterateFiles(new File(expectedFilesPath), a, true);
         while (expectedFiles.hasNext()) {
             File expectedFile = expectedFiles.next();
-            String fileContent = thriftPojoGenerator.fileToContentMap.get(expectedFile.getPath().substring(expectedFilesPath.length() + 1));
-            Assert.assertNotNull(fileContent);
-            Assert.assertEquals(FileUtils.readFileToString(expectedFile), fileContent);
+            if (expectedFile.getPath().contains("testdata.pojo")) {
+                String fileContent = thriftPojoGenerator.fileToContentMap.get(expectedFile.getPath().substring(expectedFilesPath.length() + 1));
+                Assert.assertNotNull(fileContent);
+                Assert.assertEquals(FileUtils.readFileToString(expectedFile), fileContent);
+            }
         }
     }
 

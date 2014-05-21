@@ -1,9 +1,10 @@
 package thrift.pojo;
 
-import thrift.pojo.test.pojo.package1.SimpleStructPojo;
-import thrift.pojo.test.pojo.package2.SimpleStructPackage2Pojo;
-import thrift.pojo.test.testdata.included.package1.SimpleStruct;
-import thrift.pojo.test.testdata.included.package2.SimpleStructPackage2;
+
+import org.disges.thrift.plugin.testdata.objects.included.package1.SimpleStruct;
+import org.disges.thrift.plugin.testdata.objects.included.package2.SimpleStructPackage2;
+import org.disges.thrift.plugin.testdata.pojo.package1.SimpleStructPojo;
+import org.disges.thrift.plugin.testdata.pojo.package2.SimpleStructPackage2Pojo;
 
 public abstract class ThriftPojoCollectionGeneratorAbstractTest {
     protected static PojoKeyGeneratorInterface genericKeyGenerator;

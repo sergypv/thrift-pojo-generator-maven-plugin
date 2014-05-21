@@ -1,4 +1,4 @@
-namespace java thrift.pojo.test.testdata.excluded.package3
+namespace java org.disges.thrift.plugin.testdata.objects.excluded.package3
 
 struct ObjectToBeIgnored {
     1: required string name;

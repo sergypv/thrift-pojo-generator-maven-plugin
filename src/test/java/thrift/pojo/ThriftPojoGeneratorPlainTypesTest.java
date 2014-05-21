@@ -1,14 +1,14 @@
 package thrift.pojo;
 
 import junit.framework.Assert;
+import org.disges.thrift.plugin.testdata.objects.included.package1.EnumStruct;
+import org.disges.thrift.plugin.testdata.objects.included.package1.ObjectInnerStruct;
+import org.disges.thrift.plugin.testdata.objects.included.package1.SimpleStruct;
+import org.disges.thrift.plugin.testdata.objects.included.package1.TestTypesStruct;
+import org.disges.thrift.plugin.testdata.objects.included.package2.SimpleStructPackage2;
+import org.disges.thrift.plugin.testdata.pojo.package1.TestTypesStructPojo;
+import org.disges.thrift.plugin.testdata.pojo.package1.TestTypesStructPojoBridge;
 import org.junit.Test;
-import thrift.pojo.test.pojo.package1.TestTypesStructPojo;
-import thrift.pojo.test.pojo.package1.TestTypesStructPojoBridge;
-import thrift.pojo.test.testdata.included.package1.EnumStruct;
-import thrift.pojo.test.testdata.included.package1.ObjectInnerStruct;
-import thrift.pojo.test.testdata.included.package1.SimpleStruct;
-import thrift.pojo.test.testdata.included.package1.TestTypesStruct;
-import thrift.pojo.test.testdata.included.package2.SimpleStructPackage2;
 
 public class ThriftPojoGeneratorPlainTypesTest {
     @Test

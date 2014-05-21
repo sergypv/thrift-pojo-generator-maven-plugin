@@ -1,13 +1,13 @@
 package thrift.pojo;
 
 import junit.framework.Assert;
+import org.disges.thrift.plugin.testdata.objects.included.package1.SimpleStruct;
+import org.disges.thrift.plugin.testdata.objects.included.package1.TestListStruct;
+import org.disges.thrift.plugin.testdata.objects.included.package2.SimpleStructPackage2;
+import org.disges.thrift.plugin.testdata.pojo.package1.TestListStructPojo;
+import org.disges.thrift.plugin.testdata.pojo.package1.TestListStructPojoBridge;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import thrift.pojo.test.pojo.package1.TestListStructPojo;
-import thrift.pojo.test.pojo.package1.TestListStructPojoBridge;
-import thrift.pojo.test.testdata.included.package1.SimpleStruct;
-import thrift.pojo.test.testdata.included.package1.TestListStruct;
-import thrift.pojo.test.testdata.included.package2.SimpleStructPackage2;
 
 import java.util.ArrayList;
 import java.util.List;

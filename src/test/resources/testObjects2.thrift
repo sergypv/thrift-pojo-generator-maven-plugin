@@ -1,4 +1,4 @@
-namespace java thrift.pojo.test.testdata.included.package2
+namespace java org.disges.thrift.plugin.testdata.objects.included.package2
 
 struct SimpleStructPackage2 {
     1: required string name;
