@@ -27,8 +27,9 @@
         </license>
     </licenses>
     <scm>
-        <url>https://github.com/sergypv/thrift-pojo-generator-maven-plugin</url>
-        <connection>scm:git:git://github.com/sergypv/thrift-pojo-generator-maven-plugin.git</connection>
+        <connection>scm:git:git@github.com:sergypv/thrift-pojo-generator-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:sergypv/thrift-pojo-generator-maven-plugin.git</developerConnection>
+        <url>git@github.com:sergypv/thrift-pojo-generator-maven-plugin.git</url>
     </scm>
 
     <parent>
